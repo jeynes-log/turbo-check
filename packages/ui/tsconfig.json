@@ -1,8 +1,16 @@
 {
-  "extends": "@repo/typescript-config/react-library.json",
+  "extends": "../../packages/typescript-config/base.json",
   "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "baseUrl": ".",
     "outDir": "dist",
-    "strictNullChecks": true
+    "strict": true,
+    "strictNullChecks": true,
+    "paths": {
+      "@/*": ["./*"]
+    }
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
