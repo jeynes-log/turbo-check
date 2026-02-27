@@ -1,3 +1,4 @@
+@source "../../../packages/ui/src";
 @import "@workspace/ui/styles/globals.css";
 
 body {
