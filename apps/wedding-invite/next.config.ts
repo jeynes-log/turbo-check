@@ -1,7 +1,16 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@repo/ui"],
-};
+  transpilePackages: ["@workspace/ui"],
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.pexels.com",
+        pathname: "/**",
+      },
+    ],
+  },
+}
 
-export default nextConfig;
+export default nextConfig

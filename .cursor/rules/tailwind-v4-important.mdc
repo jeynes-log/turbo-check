@@ -1,0 +1,30 @@
+---
+description: Tailwind v4 important modifier - ! goes at the end
+globs: "**/*.{tsx,ts,jsx,js,css}"
+alwaysApply: true
+---
+
+# Tailwind v4 Important Modifier
+
+Tailwind v4에서 `!important`는 **클래스 끝에** `!`를 붙입니다.
+
+## 올바른 사용
+
+```tsx
+// ✅ GOOD - v4: !를 뒤에
+className="text-stone-700!"
+className="pt-2! data-[selected=true]:bg-stone-200!"
+```
+
+## 잘못된 사용
+
+```tsx
+// ❌ BAD - v3 방식: !를 앞에
+className="!text-stone-700"
+className="!pt-2"
+```
+
+## 요약
+
+- `!className` (앞) → v3 구식
+- `className!` (뒤) → v4 올바른 방식

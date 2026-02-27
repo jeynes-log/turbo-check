@@ -1,1 +1,5 @@
-/* Global styles for wedding-invite are provided by @repo/ui/styles/globals.css imported in layout.tsx. */
+@import "@workspace/ui/styles/globals.css";
+
+body {
+  font-family: var(--font-noto-serif), "Noto Serif KR", serif;
+}
