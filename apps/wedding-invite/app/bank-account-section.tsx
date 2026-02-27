@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { CheckIcon, CopyIcon } from "lucide-react"
+import { cn } from "@workspace/ui/lib/utils"
 
 interface BankAccountEntry {
   name: string
@@ -54,22 +55,24 @@ export function BankAccountSection({ groomAccounts, brideAccounts }: BankAccount
         <button
           type="button"
           onClick={() => setActiveTab("groom")}
-          className={`flex-1 rounded-full py-2.5 text-sm font-medium transition-colors ${
+          className={cn(
+            "flex-1 rounded-full py-2.5 text-sm font-medium transition-colors",
             activeTab === "groom"
               ? "bg-white text-stone-800 shadow-sm"
               : "bg-stone-100 text-stone-600"
-          }`}
+          )}
         >
           신랑측
         </button>
         <button
           type="button"
           onClick={() => setActiveTab("bride")}
-          className={`flex-1 rounded-full py-2.5 text-sm font-medium transition-colors ${
+          className={cn(
+            "flex-1 rounded-full py-2.5 text-sm font-medium transition-colors",
             activeTab === "bride"
               ? "bg-white text-stone-800 shadow-sm"
               : "bg-stone-100 text-stone-600"
-          }`}
+          )}
         >
           신부측
         </button>

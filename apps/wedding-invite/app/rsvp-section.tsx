@@ -1,10 +1,10 @@
 "use client"
 
+import { useState } from "react"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { cn } from "@workspace/ui/lib/utils"
-import { useState } from "react"
 
 export function RsvpSection() {
   const [name, setName] = useState("")

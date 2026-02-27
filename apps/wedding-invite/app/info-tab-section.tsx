@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { cn } from "@workspace/ui/lib/utils"
 
 interface TabItem {
   id: string
@@ -56,9 +57,10 @@ export function InfoTabSection() {
             key={tab.id}
             type="button"
             onClick={() => setActiveTab(tab.id)}
-            className={`shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+            className={cn(
+              "shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-colors",
               activeTab === tab.id ? "bg-stone-700 text-white" : "bg-white text-stone-600"
-            }`}
+            )}
           >
             {tab.label}
           </button>

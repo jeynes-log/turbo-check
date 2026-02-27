@@ -1,7 +1,8 @@
 "use client"
 
-import Image from "next/image"
 import { useState } from "react"
+import Image from "next/image"
+import { cn } from "@workspace/ui/lib/utils"
 
 interface GallerySectionProps {
   images: { src: string; alt: string }[]
@@ -26,9 +27,10 @@ export function GallerySection({ images }: GallerySectionProps) {
           {images.map((image, idx) => (
             <div
               key={image.alt}
-              className={`absolute inset-0 transition-opacity duration-300 ${
+              className={cn(
+                "absolute inset-0 transition-opacity duration-300",
                 idx === currentIndex ? "z-10 opacity-100" : "z-0 opacity-0"
-              }`}
+              )}
             >
               <Image src={image.src} alt={image.alt} fill className="object-cover" />
             </div>
@@ -76,9 +78,10 @@ export function GallerySection({ images }: GallerySectionProps) {
             type="button"
             onClick={() => setCurrentIndex(idx)}
             aria-label={`${idx + 1}번 사진`}
-            className={`size-2 rounded-full transition-colors ${
+            className={cn(
+              "size-2 rounded-full transition-colors",
               idx === currentIndex ? "bg-stone-700" : "bg-stone-300"
-            }`}
+            )}
           />
         ))}
       </div>

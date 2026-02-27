@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { Noto_Serif_KR } from "next/font/google"
-import "./globals.css"
+import "@/app/globals.css"
 import { cn } from "@workspace/ui/lib/utils"
 
 const notoSerifKR = Noto_Serif_KR({
