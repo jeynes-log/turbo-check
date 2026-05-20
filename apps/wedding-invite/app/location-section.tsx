@@ -1,6 +1,8 @@
 "use client"
 
 import Image from "next/image"
+import Script from "next/script"
+import { useRef } from "react"
 
 interface LocationSectionProps {
   venueName: string
@@ -20,8 +22,30 @@ export function LocationSection({
   kakaoMapsUrl,
   tmapUrl,
 }: LocationSectionProps) {
+  const mapRef = useRef<HTMLDivElement>(null)
+
+  function initMap() {
+    if (!mapRef.current) return
+    naver.maps.Service.geocode({ query: mapSearchQuery }, (status, response) => {
+      if (status !== naver.maps.Service.Status.OK || !response.v2.addresses.length) return
+      const { x, y } = response.v2.addresses[0]
+      const position = new naver.maps.LatLng(parseFloat(y), parseFloat(x))
+      const map = new naver.maps.Map(mapRef.current!, { center: position, zoom: 17 })
+      new naver.maps.Marker({ position, map })
+    })
+  }
+
+  function handleScriptLoad() {
+    naver.maps.onJSContentLoaded = initMap
+  }
+
   return (
     <section id="location" className="bg-white px-6 py-12 shadow-[0_-4px_12px_rgba(0,0,0,0.02)]">
+      <Script
+        src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${process.env.NEXT_PUBLIC_NAVER_MAPS_CLIENT_ID}&submodules=geocoder`}
+        strategy="afterInteractive"
+        onLoad={handleScriptLoad}
+      />
       <p className="mb-2 text-center text-xs font-medium text-stone-500">LOCATION INFORMATION</p>
       <h2 className="mb-6 text-center text-lg font-bold text-stone-800">오시는 길</h2>
       <div className="space-y-4 text-center">
@@ -30,15 +54,7 @@ export function LocationSection({
       </div>
       <div className="mt-6 space-y-6">
         <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl border border-stone-200">
-          <iframe
-            title="예식장 위치"
-            src={`https://map.naver.com/v5/embed/search/${encodeURIComponent(mapSearchQuery)}`}
-            width="100%"
-            height="100%"
-            frameBorder="0"
-            allowFullScreen
-            className="absolute inset-0 block h-full w-full"
-          />
+          <div ref={mapRef} className="absolute inset-0 h-full w-full" />
         </div>
         <div className="text-center">
           <p className="mb-2 text-base font-bold text-stone-800">내비게이션</p>
