@@ -10,7 +10,7 @@ const notoSerifKR = Noto_Serif_KR({
 })
 
 export const metadata: Metadata = {
-  title: "청첩장 | 김철수 & 우영희",
+  title: "청첩장 | 김철수 💍 우영희",
   description: "두 사람의 이야기가 열리고 있어요. 2026년 11월 1일, 오드힐하우스에서 뵙겠습니다.",
 }
 

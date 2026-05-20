@@ -88,7 +88,7 @@ export default function Home() {
           weddingTime={weddingTime}
           venueName={weddingVenueName}
           venueAddress={weddingVenueAddress}
-          calendarEventTitle="김철수 & 우영희 결혼식"
+          calendarEventTitle="김철수 💍 우영희 결혼식"
           calendarEventLocation={`${weddingVenueName} ${weddingVenueAddress}`}
         />
         <CountdownSection />
@@ -125,7 +125,7 @@ function HeroSection() {
       </div>
       <div className="rounded-b-[2rem] bg-stone-100/80 px-6 py-12">
         <h1 className="mb-4 text-center text-2xl font-medium tracking-tight text-stone-800 sm:text-3xl">
-          김철수 & 우영희
+          김철수 💍 우영희
         </h1>
         <p className="text-center text-sm text-stone-600">
           {weddingDate} {weddingTime} / {weddingVenueName}
