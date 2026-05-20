@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Script from "next/script"
-import { useRef } from "react"
+import { useRef, useState } from "react"
 
 interface LocationSectionProps {
   venueName: string
@@ -23,6 +23,9 @@ export function LocationSection({
   tmapUrl,
 }: LocationSectionProps) {
   const mapRef = useRef<HTMLDivElement>(null)
+  const mapInstanceRef = useRef<naver.maps.Map | null>(null)
+  const venuePositionRef = useRef<naver.maps.LatLng | null>(null)
+  const [showReset, setShowReset] = useState(false)
 
   function initMap() {
     if (!mapRef.current) return
@@ -32,11 +35,21 @@ export function LocationSection({
       const position = new naver.maps.LatLng(parseFloat(y), parseFloat(x))
       const map = new naver.maps.Map(mapRef.current!, { center: position, zoom: 17 })
       new naver.maps.Marker({ position, map })
+      mapInstanceRef.current = map
+      venuePositionRef.current = position
+      naver.maps.Event.addListener(map, 'idle', () => {
+        setShowReset(!map.getBounds().hasPoint(position))
+      })
     })
   }
 
   function handleScriptLoad() {
     naver.maps.onJSContentLoaded = initMap
+  }
+
+  function handleReset() {
+    mapInstanceRef.current?.setCenter(venuePositionRef.current!)
+    mapInstanceRef.current?.setZoom(17)
   }
 
   return (
@@ -55,6 +68,14 @@ export function LocationSection({
       <div className="mt-6 space-y-6">
         <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl border border-stone-200">
           <div ref={mapRef} className="absolute inset-0 h-full w-full" />
+          {showReset && (
+            <button
+              onClick={handleReset}
+              className="absolute bottom-3 left-1/2 z-10 -translate-x-1/2 rounded-full bg-white px-4 py-2 text-sm font-medium text-stone-700 shadow-md"
+            >
+              📍 결혼식장 보기
+            </button>
+          )}
         </div>
         <div className="text-center">
           <p className="mb-2 text-base font-bold text-stone-800">내비게이션</p>
