@@ -66,11 +66,9 @@ const heroImageSrc =
 
 const mapSearchQuery = "서울 서초구 방배로 47"
 
-const naverMapsUrl = `https://map.naver.com/v5/search/${encodeURIComponent(mapSearchQuery)}`
+const naverMapsUrl = `https://map.naver.com/v5/search/${encodeURIComponent(`${weddingVenueName} ${weddingVenueAddress}`)}`
 
-const kakaoMapsUrl = `https://map.kakao.com/?q=${encodeURIComponent(mapSearchQuery)}`
-
-const tmapUrl = `https://www.tmap.co.kr/tmap2/mobile/route.jsp?goalname=${encodeURIComponent(weddingVenueName + " " + weddingVenueAddress)}`
+const kakaoMapsUrl = `https://map.kakao.com/?q=${encodeURIComponent(weddingVenueAddress)}`
 
 export default function Home() {
   return (
@@ -99,7 +97,6 @@ export default function Home() {
           mapSearchQuery={mapSearchQuery}
           naverMapsUrl={naverMapsUrl}
           kakaoMapsUrl={kakaoMapsUrl}
-          tmapUrl={tmapUrl}
         />
         <GallerySection images={galleryImages} />
         <BankAccountSection groomAccounts={bankAccounts.groom} brideAccounts={bankAccounts.bride} />

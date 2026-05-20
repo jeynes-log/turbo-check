@@ -1,6 +1,7 @@
 "use client"
 
-import Image from "next/image"
+import { Button } from "@workspace/ui/components/button"
+import Link from "next/link"
 import Script from "next/script"
 import { useRef, useState } from "react"
 
@@ -11,7 +12,6 @@ interface LocationSectionProps {
   mapSearchQuery: string
   naverMapsUrl: string
   kakaoMapsUrl: string
-  tmapUrl: string
 }
 
 export function LocationSection({
@@ -20,7 +20,6 @@ export function LocationSection({
   mapSearchQuery,
   naverMapsUrl,
   kakaoMapsUrl,
-  tmapUrl,
 }: LocationSectionProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<naver.maps.Map | null>(null)
@@ -77,56 +76,17 @@ export function LocationSection({
             </button>
           )}
         </div>
-        <div className="text-center">
-          <p className="mb-2 text-base font-bold text-stone-800">내비게이션</p>
-          <p className="mb-4 text-sm text-stone-600">앱을 열어 길 안내를 시작해 보세요.</p>
-          <div className="flex flex-wrap justify-center gap-3">
-            <a
-              href={tmapUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-3 shadow-sm transition-colors hover:bg-stone-50"
-            >
-              <Image
-                src="/icons/t_map_icon.svg"
-                alt="티맵"
-                width={24}
-                height={24}
-                className="size-6 shrink-0"
-              />
-              <span className="text-sm font-medium text-stone-700">티맵</span>
-            </a>
-            <a
-              href={kakaoMapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-3 shadow-sm transition-colors hover:bg-stone-50"
-            >
-              <Image
-                src="/icons/kakaonavi.png"
-                alt="카카오 내비"
-                width={24}
-                height={24}
-                className="size-6 shrink-0"
-              />
-              <span className="text-sm font-medium text-stone-700">카카오 내비</span>
-            </a>
-            <a
-              href={naverMapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-3 shadow-sm transition-colors hover:bg-stone-50"
-            >
-              <Image
-                src="/icons/naver_map_logo.png"
-                alt="네이버 지도"
-                width={24}
-                height={24}
-                className="size-6 shrink-0"
-              />
-              <span className="text-sm font-medium text-stone-700">네이버 지도</span>
-            </a>
-          </div>
+        <div className="flex gap-3">
+          <Button asChild variant="outline" className="flex-1">
+            <Link href={naverMapsUrl} target="_blank" rel="noopener noreferrer">
+              네이버 지도
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="flex-1">
+            <Link href={kakaoMapsUrl} target="_blank" rel="noopener noreferrer">
+              카카오맵
+            </Link>
+          </Button>
         </div>
       </div>
     </section>
