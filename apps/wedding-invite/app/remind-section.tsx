@@ -1,5 +1,6 @@
 "use client"
 
+import { Button } from "@workspace/ui/components/button"
 import { BellIcon } from "lucide-react"
 
 export function RemindSection() {
@@ -20,14 +21,10 @@ export function RemindSection() {
           </p>
           <p>리마인드 메세지를 보내드려요.</p>
         </div>
-        <button
-          type="button"
-          onClick={handleRemindClick}
-          className="inline-flex items-center gap-2 rounded-full border border-stone-700 bg-stone-700 px-4 py-2.5 text-sm text-white opacity-90 transition-opacity hover:opacity-100"
-        >
+        <Button size="lg" type="button" onClick={handleRemindClick} className="rounded-full">
           <BellIcon className="size-5" />
           리마인드 메세지 받기
-        </button>
+        </Button>
       </div>
     </section>
   )

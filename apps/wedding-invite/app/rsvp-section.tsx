@@ -5,6 +5,7 @@ import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { cn } from "@workspace/ui/lib/utils"
+import { Button } from "@workspace/ui/components/button"
 
 export function RsvpSection() {
   const [name, setName] = useState("")
@@ -111,13 +112,9 @@ export function RsvpSection() {
             className="resize-none rounded-xl border-stone-200 bg-stone-50"
           />
         </div>
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="mt-2 rounded-full bg-stone-700 py-3 text-sm font-medium text-white"
-        >
-          {isLoading ? "전송 중..." : "작성 완료"}
-        </button>
+        <Button size="lg" type="submit" disabled={isLoading} className="mx-auto rounded-full">
+          {isLoading ? "전송 중..." : "참석 여부 전송하기"}
+        </Button>
       </form>
     </section>
   )

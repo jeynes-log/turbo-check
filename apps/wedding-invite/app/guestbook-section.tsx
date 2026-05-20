@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Input } from "@workspace/ui/components/input"
 import { Textarea } from "@workspace/ui/components/textarea"
+import { Button } from "@workspace/ui/components/button"
 
 interface GuestbookEntry {
   id: string
@@ -41,7 +42,7 @@ export function GuestbookSection() {
   return (
     <section id="guestbook" className="bg-white px-6 py-12">
       <h2 className="mb-6 text-center text-lg font-bold text-stone-800">방명록</h2>
-      <form onSubmit={handleSubmit} className="mb-8 space-y-4">
+      <form onSubmit={handleSubmit} className="mb-8 flex flex-col space-y-4">
         <Input
           placeholder="이름"
           value={name}
@@ -57,13 +58,9 @@ export function GuestbookSection() {
           disabled={isSubmitting}
           className="resize-none rounded-xl border-stone-200 bg-stone-50"
         />
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full rounded-full bg-stone-700 py-3 text-sm font-medium text-white"
-        >
-          {isSubmitting ? "등록 중..." : "등록하기"}
-        </button>
+        <Button size="lg" type="submit" disabled={isSubmitting} className="mx-auto rounded-full">
+          {isSubmitting ? "등록 중..." : "방명록 등록하기"}
+        </Button>
       </form>
       <div className="space-y-4">
         {entries.length === 0 ? (
