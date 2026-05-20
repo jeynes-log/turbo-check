@@ -11,7 +11,7 @@ import { RemindSection } from "@/app/remind-section"
 import { RsvpSection } from "@/app/rsvp-section"
 import Image from "next/image"
 
-const footerAuthor = "Redonearth"
+const footerAuthor = "Jeynes"
 
 const weddingDateAsDate = new Date(2026, 10, 1, 12, 0, 0, 0) // 2026-11-01 12:00 (month 0-indexed)
 
@@ -58,10 +58,6 @@ const galleryImages = [
   {
     src: "https://images.pexels.com/photos/3292695/pexels-photo-3292695.jpeg?auto=compress&cs=tinysrgb&w=1200",
     alt: "웨딩 사진 5",
-  },
-  {
-    src: "https://images.pexels.com/photos/1267380/pexels-photo-1267380.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    alt: "웨딩 사진 6",
   },
 ]
 
