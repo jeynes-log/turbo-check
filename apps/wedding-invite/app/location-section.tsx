@@ -1,14 +1,14 @@
 "use client"
 
 import { Button } from "@workspace/ui/components/button"
-import Link from "next/link"
+import { Bus, Car, Plane, SquareParking, Train, TrainFront } from "lucide-react"
+import Image from "next/image"
 import Script from "next/script"
 import { useRef, useState } from "react"
 
 interface LocationSectionProps {
   venueName: string
   venueAddress: string
-  fullAddress: string
   mapSearchQuery: string
   naverMapsUrl: string
   kakaoMapsUrl: string
@@ -16,7 +16,7 @@ interface LocationSectionProps {
 
 export function LocationSection({
   venueName,
-  fullAddress,
+  venueAddress,
   mapSearchQuery,
   naverMapsUrl,
   kakaoMapsUrl,
@@ -25,6 +25,71 @@ export function LocationSection({
   const mapInstanceRef = useRef<naver.maps.Map | null>(null)
   const venuePositionRef = useRef<naver.maps.LatLng | null>(null)
   const [showReset, setShowReset] = useState(false)
+  const [activeTab, setActiveTab] = useState("subway")
+
+  const tabs = [
+    {
+      id: "subway",
+      label: "지하철",
+      icon: <TrainFront size={16} />,
+      lines: ["지하철 2호선 방배역 3번 출구 도보 약 3분", "지하철 7호선 내방역 이용 가능"],
+    },
+    {
+      id: "bus",
+      label: "버스",
+      icon: <Bus size={16} />,
+      lines: ["방배역 · 방배사거리 정류장 하차", "(간선 / 지선 버스 다수 운행)"],
+    },
+    {
+      id: "car",
+      label: "자가용",
+      icon: <Car size={16} />,
+      lines: [
+        "네비게이션 검색 : 오드힐하우스",
+        "주소 검색 : 서울 서초구 방배로 47",
+        "",
+        "강남 방면 : 서초대로 → 방배로 진입",
+        "사당 방면 : 동작대로 → 방배로 진입",
+        "이수 방면 : 방배로 따라 직진",
+      ],
+    },
+    {
+      id: "train",
+      label: "기차",
+      icon: <Train size={16} />,
+      lines: [
+        "[서울역 이용 시]",
+        "지하철 4호선 탑승 → 사당역 환승 →",
+        "2호선 방배역 하차",
+        "",
+        "택시 이용 시 약 25~35분 소요",
+      ],
+    },
+    {
+      id: "parking",
+      label: "주차",
+      icon: <SquareParking size={16} />,
+      lines: [
+        "건물 내 주차 가능",
+        "예식 당일 혼잡할 수 있으니",
+        "가급적 대중교통 이용을 권장드립니다",
+      ],
+    },
+    {
+      id: "flight",
+      label: "항공",
+      icon: <Plane size={16} />,
+      lines: [
+        "[김포공항]",
+        "공항철도 탑승 → 홍대입구역 환승 →",
+        "2호선 방배역 하차",
+        "",
+        "[인천공항]",
+        "공항철도 탑승 → 서울역 또는 홍대입구역 환승 →",
+        "2호선 방배역 하차",
+      ],
+    },
+  ]
 
   function initMap() {
     if (!mapRef.current) return
@@ -36,7 +101,7 @@ export function LocationSection({
       new naver.maps.Marker({ position, map })
       mapInstanceRef.current = map
       venuePositionRef.current = position
-      naver.maps.Event.addListener(map, 'idle', () => {
+      naver.maps.Event.addListener(map, "idle", () => {
         setShowReset(!map.getBounds().hasPoint(position))
       })
     })
@@ -58,11 +123,11 @@ export function LocationSection({
         strategy="afterInteractive"
         onLoad={handleScriptLoad}
       />
-      <p className="mb-2 text-center text-xs font-medium text-stone-500">LOCATION INFORMATION</p>
+
       <h2 className="mb-6 text-center text-lg font-bold text-stone-800">오시는 길</h2>
-      <div className="space-y-4 text-center">
-        <p className="text-sm text-stone-700">{fullAddress}</p>
-        <p className="text-sm font-medium text-stone-800">{venueName}</p>
+      <div className="space-y-1 text-center">
+        <p className="text-base font-medium text-stone-800">{venueName}</p>
+        <p className="text-sm text-stone-700">{venueAddress}</p>
       </div>
       <div className="mt-6 space-y-6">
         <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl border border-stone-200">
@@ -77,16 +142,59 @@ export function LocationSection({
           )}
         </div>
         <div className="flex gap-3">
-          <Button asChild variant="outline" className="flex-1">
-            <Link href={naverMapsUrl} target="_blank" rel="noopener noreferrer">
-              네이버 지도
-            </Link>
+          <Button
+            variant="outline"
+            onClick={() => window.open(naverMapsUrl, "_blank", "noopener,noreferrer")}
+            className="flex-1"
+          >
+            <Image src="/icons/naver-map-icon.svg" alt="" width={16} height={16} />
+            네이버 지도
           </Button>
-          <Button asChild variant="outline" className="flex-1">
-            <Link href={kakaoMapsUrl} target="_blank" rel="noopener noreferrer">
-              카카오맵
-            </Link>
+          <Button
+            variant="outline"
+            onClick={() => window.open(kakaoMapsUrl, "_blank", "noopener,noreferrer")}
+            className="flex-1"
+          >
+            <Image src="/icons/kakao-map-icon.svg" alt="" width={16} height={16} />
+            카카오맵
           </Button>
+        </div>
+        <div>
+          <div className="grid grid-cols-3 gap-2">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex flex-col items-center gap-1 rounded-xl border py-3 text-xs font-medium transition-colors ${
+                  activeTab === tab.id
+                    ? "border-transparent bg-stone-800 text-white"
+                    : "border-stone-200 bg-stone-50 text-stone-500"
+                }`}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
+          </div>
+          <div className="mt-3 rounded-xl bg-stone-50 p-4 text-center">
+            {tabs
+              .find((t) => t.id === activeTab)
+              ?.lines.map((line, i) => {
+                if (line === "") return <div key={i} className="h-2" />
+                if (line.startsWith("[") && line.endsWith("]")) {
+                  return (
+                    <p key={i} className="text-sm font-semibold text-stone-800">
+                      {line.slice(1, -1)}
+                    </p>
+                  )
+                }
+                return (
+                  <p key={i} className="text-sm text-stone-600">
+                    {line}
+                  </p>
+                )
+              })}
+          </div>
         </div>
       </div>
     </section>

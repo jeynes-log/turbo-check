@@ -23,8 +23,6 @@ const weddingVenueName = "오드힐하우스"
 
 const weddingVenueAddress = "서울 서초구 방배로 47"
 
-const weddingVenueFullAddress = "서울 서초구 방배로 47, 오드힐하우스"
-
 const bankAccounts = {
   groom: [
     { name: "[신랑] 김철수", bank: "경남은행", account: "123-456-789012" },
@@ -93,7 +91,6 @@ export default function Home() {
         <LocationSection
           venueName={weddingVenueName}
           venueAddress={weddingVenueAddress}
-          fullAddress={weddingVenueFullAddress}
           mapSearchQuery={mapSearchQuery}
           naverMapsUrl={naverMapsUrl}
           kakaoMapsUrl={kakaoMapsUrl}
