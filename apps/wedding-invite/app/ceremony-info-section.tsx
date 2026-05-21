@@ -1,5 +1,6 @@
 "use client"
 
+import { Countdown } from "@/app/countdown"
 import { buttonVariants } from "@workspace/ui/components/button"
 import { Calendar } from "@workspace/ui/components/calendar"
 import { cn } from "@workspace/ui/lib/utils"
@@ -50,64 +51,58 @@ function formatWeddingDate(date: Date): string {
 export function CeremonyInfoSection({
   weddingDate,
   weddingTime,
-  venueName,
-  venueAddress,
   calendarEventTitle = "결혼식",
   calendarEventLocation = "",
 }: CeremonyInfoSectionProps) {
   const calendarUrl = buildGoogleCalendarUrl(weddingDate, calendarEventTitle, calendarEventLocation)
 
   return (
-    <section id="ceremony-info" className="bg-white px-6 py-12">
-      <p className="mb-2 text-center text-xs font-medium text-stone-500">WEDDING INFORMATION</p>
+    <section id="ceremony-info" className="flex flex-col bg-white px-6 py-12">
       <h2 className="mb-8 text-center text-lg font-bold text-stone-800">예식 안내</h2>
-      <div className="space-y-4 text-center">
-        <p className="text-xl font-bold text-stone-800">{venueName}</p>
-        <p className="text-sm text-stone-600">{formatWeddingDate(weddingDate)}</p>
-        <p className="text-sm font-medium text-stone-700">{weddingTime}</p>
-        <p className="text-sm text-stone-600">{venueAddress}</p>
+      <div className="space-y-1 text-center">
+        <p className="text-base text-stone-700">{formatWeddingDate(weddingDate)}</p>
+        <p className="text-base font-medium text-stone-700">{weddingTime}</p>
       </div>
-      <div className="mt-8">
-        <div className="-mx-6 bg-stone-50/80 px-4 py-6">
-          <Calendar
-            mode="single"
-            selected={weddingDate}
-            defaultMonth={weddingDate}
-            showOutsideDays={false}
-            disabled
-            formatters={{ formatWeekdayName: (date) => WEEKDAY_KO[date.getDay()] }}
-            className="w-full [--cell-size:2.5rem]"
-            classNames={{
-              root: "w-full",
-              months: "flex flex-col w-full",
-              month: "flex flex-col gap-4 w-full",
-              month_caption: "hidden",
-              nav: "hidden",
-              table: "w-full border-collapse",
-              weekdays: "flex",
-              weekday:
-                "flex-1 text-center text-xs font-medium text-stone-600 first:text-red-400 last:text-blue-400",
-              week: "flex w-full mt-2",
-              day: "relative flex-1 flex items-center justify-center p-0 text-center text-sm text-stone-600 first:text-red-400 last:text-blue-400",
-              day_button:
-                "flex size-10 shrink-0 items-center justify-center rounded-full font-normal text-inherit data-[selected-single=true]:bg-stone-200 data-[selected-single=true]:font-medium data-[selected-single=true]:text-stone-700!",
-              outside: "text-stone-300",
-              hidden: "invisible",
-            }}
-          />
-        </div>
-        <div className="mt-6 text-center">
-          <a
-            href={calendarUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cn(buttonVariants({ size: "lg" }), "rounded-full")}
-          >
-            <CalendarPlusIcon className="size-5" />
-            달력에 추가하기
-          </a>
-        </div>
-      </div>
+
+      <Calendar
+        mode="single"
+        selected={weddingDate}
+        defaultMonth={weddingDate}
+        showOutsideDays={false}
+        disabled
+        formatters={{ formatWeekdayName: (date) => WEEKDAY_KO[date.getDay()] }}
+        className="w-full px-20 py-8 [--cell-size:2.5rem]"
+        classNames={{
+          root: "w-ful",
+          months: "flex flex-col w-full",
+          month: "flex flex-col gap-4 w-full",
+          month_caption: "hidden",
+          nav: "hidden",
+          table: "w-full border-collapse",
+          weekdays: "flex",
+          weekday:
+            "flex-1 text-center text-xs font-medium text-stone-600 first:text-red-400 last:text-blue-400",
+          week: "flex w-full mt-2",
+          day: "relative flex-1 flex items-center justify-center p-0 text-center text-sm text-stone-900 first:text-red-500 last:text-blue-500",
+          day_button:
+            "flex size-10 shrink-0 items-center justify-center rounded-full font-normal text-inherit data-[selected-single=true]:bg-stone-200 data-[selected-single=true]:font-medium data-[selected-single=true]:text-stone-800!",
+          outside: "text-stone-300",
+          hidden: "invisible",
+          disabled: "opacity-100",
+        }}
+      />
+
+      <Countdown />
+
+      <a
+        href={calendarUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={cn(buttonVariants({ size: "lg" }), "mt-6 w-fit self-center rounded-full")}
+      >
+        <CalendarPlusIcon className="size-5" />
+        달력에 추가하기
+      </a>
     </section>
   )
 }

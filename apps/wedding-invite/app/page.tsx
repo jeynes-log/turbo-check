@@ -1,12 +1,10 @@
 import { BankAccountSection } from "@/app/bank-account-section"
 import { CeremonyInfoSection } from "@/app/ceremony-info-section"
-import { CountdownSection } from "@/app/countdown-section"
 import { FlowerSection } from "@/app/flower-section"
 import { GallerySection } from "@/app/gallery-section"
 import { GuestbookSection } from "@/app/guestbook-section"
 import { InfoTabSection } from "@/app/info-tab-section"
 import { LocationSection } from "@/app/location-section"
-import { OurStorySection } from "@/app/our-story-section"
 import { RemindSection } from "@/app/remind-section"
 import { RsvpSection } from "@/app/rsvp-section"
 import Image from "next/image"
@@ -71,14 +69,10 @@ const kakaoMapsUrl = `https://map.kakao.com/?q=${encodeURIComponent(weddingVenue
 export default function Home() {
   return (
     <div className="min-h-screen bg-stone-100/80">
-      <main className="mx-auto flex w-full max-w-[480px] flex-col">
+      <main className="mx-auto flex w-full max-w-[480px] flex-col shadow-2xl">
         <HeroSection />
         <GreetingSection />
-        <RemindSection />
-        <RsvpSection />
-        <GuestbookSection />
-        <InfoTabSection />
-        <OurStorySection />
+        <GallerySection images={galleryImages} />
         <CeremonyInfoSection
           weddingDate={weddingDateAsDate}
           weddingTime={weddingTime}
@@ -87,7 +81,6 @@ export default function Home() {
           calendarEventTitle="김철수 💍 우영희 결혼식"
           calendarEventLocation={`${weddingVenueName} ${weddingVenueAddress}`}
         />
-        <CountdownSection />
         <LocationSection
           venueName={weddingVenueName}
           venueAddress={weddingVenueAddress}
@@ -95,8 +88,11 @@ export default function Home() {
           naverMapsUrl={naverMapsUrl}
           kakaoMapsUrl={kakaoMapsUrl}
         />
-        <GallerySection images={galleryImages} />
+        <InfoTabSection />
         <BankAccountSection groomAccounts={bankAccounts.groom} brideAccounts={bankAccounts.bride} />
+        <RemindSection />
+        <RsvpSection />
+        <GuestbookSection />
         <FlowerSection />
         <ClosingSection />
         <FooterSection />
@@ -131,7 +127,10 @@ function HeroSection() {
 
 function GreetingSection() {
   return (
-    <section id="greeting" className="bg-white px-6 py-12 text-center shadow-sm">
+    <section
+      id="greeting"
+      className="flex flex-col gap-y-24 bg-white px-6 py-12 text-center shadow-sm"
+    >
       <div className="mx-auto max-w-md text-base leading-[1.8] text-stone-700 [&_p]:mb-2 [&_p:last-child]:mb-0">
         <p>저희 두 사람이 오랜 인연 끝에</p>
         <p>사랑으로 한 마음이 되어</p>
@@ -145,6 +144,11 @@ function GreetingSection() {
         <p>
           <strong>큰 기쁨과 감사로 간직하겠습니다.</strong>
         </p>
+      </div>
+
+      <div className="space-y-4 text-center text-base leading-relaxed text-stone-700 [&_p]:mb-2 [&_p:last-child]:mb-0">
+        <p>김만수 ∙ 이영숙의 장남 철수</p>
+        <p>우준식 ∙ 박수진의 장녀 영희</p>
       </div>
     </section>
   )

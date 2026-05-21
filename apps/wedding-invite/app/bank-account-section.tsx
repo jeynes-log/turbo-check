@@ -44,7 +44,6 @@ export function BankAccountSection({ groomAccounts, brideAccounts }: BankAccount
       id="bank-account"
       className="bg-white px-6 py-12 shadow-[0_-4px_12px_rgba(0,0,0,0.02)]"
     >
-      <p className="mb-2 text-center text-xs font-medium text-stone-500">ACCOUNT INFORMATION</p>
       <h2 className="mb-6 text-center text-lg font-bold text-stone-800">마음 전하실 곳</h2>
       <div className="mb-6 space-y-2 text-center text-sm text-stone-700">
         <p>비대면으로 축하를 전하고자</p>
