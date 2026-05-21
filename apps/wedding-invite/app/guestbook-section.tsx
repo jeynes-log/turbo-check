@@ -150,8 +150,11 @@ export function GuestbookSection() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     })
+
     if (!res.ok) return { error: "등록에 실패했습니다." }
+
     const newEntry: GuestbookEntry = await res.json()
+
     setEntries((prev) => [newEntry, ...prev])
     setCreateOpen(false)
     toast.success("방명록이 등록되었습니다.")
@@ -159,14 +162,18 @@ export function GuestbookSection() {
 
   const handleEdit = async (data: FormData): Promise<{ error?: string } | void> => {
     if (!editTarget) return
+
     const res = await fetch(`/api/guestbook/${editTarget.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     })
+
     if (res.status === 401) return { error: "비밀번호가 틀렸습니다." }
     if (!res.ok) return { error: "수정에 실패했습니다." }
+
     const updated: GuestbookEntry = await res.json()
+
     setEntries((prev) => prev.map((e) => (e.id === updated.id ? updated : e)))
     setEditTarget(null)
     toast.success("방명록이 수정되었습니다.")
@@ -174,14 +181,17 @@ export function GuestbookSection() {
 
   const handleDelete = async () => {
     if (!deleteTarget) return
+
     setIsDeleting(true)
     setDeleteError("")
+
     try {
       const res = await fetch(`/api/guestbook/${deleteTarget.id}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password: deletePassword }),
       })
+
       if (res.status === 401) {
         setDeleteError("비밀번호가 틀렸습니다.")
         return
@@ -190,6 +200,7 @@ export function GuestbookSection() {
         setDeleteError("삭제에 실패했습니다.")
         return
       }
+
       setEntries((prev) => prev.filter((e) => e.id !== deleteTarget.id))
       setDeleteTarget(null)
       setDeletePassword("")

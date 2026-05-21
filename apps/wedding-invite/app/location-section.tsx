@@ -93,14 +93,19 @@ export function LocationSection({
 
   function initMap() {
     if (!mapRef.current) return
+
     naver.maps.Service.geocode({ query: mapSearchQuery }, (status, response) => {
       if (status !== naver.maps.Service.Status.OK || !response.v2.addresses.length) return
+
       const { x, y } = response.v2.addresses[0]
       const position = new naver.maps.LatLng(parseFloat(y), parseFloat(x))
+
       const map = new naver.maps.Map(mapRef.current!, { center: position, zoom: 17 })
       new naver.maps.Marker({ position, map })
+
       mapInstanceRef.current = map
       venuePositionRef.current = position
+
       naver.maps.Event.addListener(map, "idle", () => {
         setShowReset(!map.getBounds().hasPoint(position))
       })
