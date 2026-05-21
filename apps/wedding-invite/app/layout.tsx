@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Noto_Serif_KR } from "next/font/google"
+import { Toaster } from "@workspace/ui/components/sonner"
 import "@/app/globals.css"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -21,7 +22,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={cn(notoSerifKR.variable, "font-sans antialiased")}>{children}</body>
+      <body className={cn(notoSerifKR.variable, "font-sans antialiased")}>
+        {children}
+        <Toaster richColors position="bottom-center" />
+      </body>
     </html>
   )
 }

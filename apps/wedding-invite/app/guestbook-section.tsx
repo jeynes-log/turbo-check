@@ -1,85 +1,330 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useForm, useWatch } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+import { Pencil, Trash2 } from "lucide-react"
+import { toast } from "sonner"
+import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Textarea } from "@workspace/ui/components/textarea"
-import { Button } from "@workspace/ui/components/button"
+import { Label } from "@workspace/ui/components/label"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
+import { cn } from "@workspace/ui/lib/utils"
 import type { GuestbookEntry } from "@/lib/schema"
 
+const formSchema = z.object({
+  name: z.string().min(1, "성함을 입력해 주세요."),
+  message: z.string().min(1, "내용을 입력해 주세요.").max(100, "100자 이내로 작성해 주세요."),
+  password: z.string().regex(/^\d{4}$/, "4자리 숫자를 입력해 주세요."),
+})
+
+type FormData = z.infer<typeof formSchema>
+
+function formatDate(date: string | Date) {
+  return new Date(date).toLocaleDateString("ko-KR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })
+}
+
+function GuestbookForm({
+  defaultValues,
+  onSubmit,
+  submitLabel,
+}: {
+  defaultValues?: Partial<FormData>
+  onSubmit: (data: FormData) => Promise<{ error?: string } | void>
+  submitLabel: string
+}) {
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { name: "", message: "", password: "", ...defaultValues },
+  })
+  const messageValue = useWatch({ control: form.control, name: "message", defaultValue: "" })
+
+  const handleSubmitWrapper = async (data: FormData) => {
+    const result = await onSubmit(data)
+    if (result?.error) {
+      form.setError("root", { message: result.error })
+    }
+  }
+
+  return (
+    <form onSubmit={form.handleSubmit(handleSubmitWrapper)} className="flex flex-col gap-5">
+      <div className="space-y-2">
+        <Label htmlFor="gb-name">성함</Label>
+        <Input
+          {...form.register("name")}
+          id="gb-name"
+          placeholder="작성자 성함을 입력해 주세요."
+          className={cn(
+            "rounded-xl border-stone-200",
+            form.formState.errors.name && "border-red-300"
+          )}
+        />
+        {form.formState.errors.name && (
+          <p className="text-xs text-red-400">{form.formState.errors.name.message}</p>
+        )}
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="gb-message">내용</Label>
+        <div className="relative">
+          <Textarea
+            {...form.register("message")}
+            id="gb-message"
+            placeholder="100자 이내로 작성해 주세요."
+            rows={4}
+            className={cn(
+              "resize-none rounded-xl border-stone-200 pb-7",
+              form.formState.errors.message && "border-red-300"
+            )}
+          />
+          <span className="absolute right-3 bottom-2.5 text-xs text-stone-400">
+            {messageValue.length}/100
+          </span>
+        </div>
+        {form.formState.errors.message && (
+          <p className="text-xs text-red-400">{form.formState.errors.message.message}</p>
+        )}
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="gb-password">비밀번호</Label>
+        <Input
+          {...form.register("password", { onChange: () => form.clearErrors("root") })}
+          id="gb-password"
+          type="password"
+          inputMode="numeric"
+          maxLength={4}
+          placeholder="비밀번호를 입력해 주세요. (4자리)"
+          className={cn(
+            "rounded-xl border-stone-200",
+            form.formState.errors.password && "border-red-300"
+          )}
+        />
+        {form.formState.errors.password && (
+          <p className="text-xs text-red-400">{form.formState.errors.password.message}</p>
+        )}
+        {form.formState.errors.root && (
+          <p className="text-xs text-red-400">{form.formState.errors.root.message}</p>
+        )}
+      </div>
+      <Button
+        size="lg"
+        type="submit"
+        disabled={form.formState.isSubmitting}
+        className="w-full rounded-full"
+      >
+        {form.formState.isSubmitting ? "처리 중..." : submitLabel}
+      </Button>
+    </form>
+  )
+}
+
 export function GuestbookSection() {
-  const [name, setName] = useState("")
-  const [message, setMessage] = useState("")
   const [entries, setEntries] = useState<GuestbookEntry[]>([])
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [createOpen, setCreateOpen] = useState(false)
+  const [editTarget, setEditTarget] = useState<GuestbookEntry | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<GuestbookEntry | null>(null)
+  const [deletePassword, setDeletePassword] = useState("")
+  const [deleteError, setDeleteError] = useState("")
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  async function loadEntries() {
+    try {
+      const res = await fetch("/api/guestbook")
+      const data = await res.json()
+      setEntries(data)
+    } catch {}
+  }
 
   useEffect(() => {
-    fetch("/api/guestbook")
-      .then((res) => res.json())
-      .then(setEntries)
-      .catch(() => {})
+    loadEntries()
   }, [])
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!name.trim() || !message.trim()) return
+  const handleCreate = async (data: FormData): Promise<{ error?: string } | void> => {
+    const res = await fetch("/api/guestbook", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    })
+    if (!res.ok) return { error: "등록에 실패했습니다." }
+    const newEntry: GuestbookEntry = await res.json()
+    setEntries((prev) => [newEntry, ...prev])
+    setCreateOpen(false)
+    toast.success("방명록이 등록되었습니다.")
+  }
 
-    setIsSubmitting(true)
+  const handleEdit = async (data: FormData): Promise<{ error?: string } | void> => {
+    if (!editTarget) return
+    const res = await fetch(`/api/guestbook/${editTarget.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    })
+    if (res.status === 401) return { error: "비밀번호가 틀렸습니다." }
+    if (!res.ok) return { error: "수정에 실패했습니다." }
+    const updated: GuestbookEntry = await res.json()
+    setEntries((prev) => prev.map((e) => (e.id === updated.id ? updated : e)))
+    setEditTarget(null)
+    toast.success("방명록이 수정되었습니다.")
+  }
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return
+    setIsDeleting(true)
+    setDeleteError("")
     try {
-      const res = await fetch("/api/guestbook", {
-        method: "POST",
+      const res = await fetch(`/api/guestbook/${deleteTarget.id}`, {
+        method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, message }),
+        body: JSON.stringify({ password: deletePassword }),
       })
-      if (!res.ok) return
-      const newEntry: GuestbookEntry = await res.json()
-      setEntries((prev) => [newEntry, ...prev])
-      setName("")
-      setMessage("")
+      if (res.status === 401) {
+        setDeleteError("비밀번호가 틀렸습니다.")
+        return
+      }
+      if (!res.ok) {
+        setDeleteError("삭제에 실패했습니다.")
+        return
+      }
+      setEntries((prev) => prev.filter((e) => e.id !== deleteTarget.id))
+      setDeleteTarget(null)
+      setDeletePassword("")
+      toast.success("방명록이 삭제되었습니다.")
     } finally {
-      setIsSubmitting(false)
+      setIsDeleting(false)
     }
   }
 
   return (
     <section id="guestbook" className="bg-white px-6 py-12">
-      <h2 className="mb-6 text-center text-lg font-bold text-stone-800">방명록</h2>
-      <form onSubmit={handleSubmit} className="mb-8 flex flex-col space-y-4">
-        <Input
-          placeholder="이름"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          disabled={isSubmitting}
-          className="rounded-xl border-stone-200 bg-stone-50"
-        />
-        <Textarea
-          placeholder="축하 메시지를 남겨주세요"
-          rows={3}
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          disabled={isSubmitting}
-          className="resize-none rounded-xl border-stone-200 bg-stone-50"
-        />
-        <Button size="lg" type="submit" disabled={isSubmitting} className="mx-auto rounded-full">
-          {isSubmitting ? "등록 중..." : "방명록 등록하기"}
-        </Button>
-      </form>
-      <div className="space-y-4">
+      <h2 className="mb-3 text-center text-lg font-bold text-stone-800">방명록</h2>
+      <p className="mb-8 text-center text-sm leading-relaxed text-stone-500">
+        축하의 마음을 담은 메시지를 남겨주세요.
+        <br />
+        소중한 한마디, 오래도록 기억하겠습니다.
+      </p>
+
+      <div className="mb-8 space-y-4">
         {entries.length === 0 ? (
-          <p className="py-8 text-center text-sm text-stone-500">
-            아직 남겨주신 축하 메시지가 없습니다.
-          </p>
+          <div className="py-8 text-center text-sm leading-relaxed text-stone-400">
+            <p>아직 작성된 방명록이 없어요.</p>
+            <p>첫 번째 방명록을 남겨보세요!</p>
+          </div>
         ) : (
           entries.map((entry) => (
             <div
               key={entry.id}
-              className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-4"
+              className="flex items-start gap-3 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-4"
             >
-              <p className="mb-1 text-sm font-medium text-stone-800">{entry.name}</p>
-              <p className="text-sm text-stone-600">{entry.message}</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-stone-800">{entry.name}</p>
+                <p className="mt-0.5 text-xs text-stone-400">{formatDate(entry.createdAt)}</p>
+                <p className="mt-1.5 text-sm text-stone-600">{entry.message}</p>
+              </div>
+              <div className="mt-0.5 flex shrink-0 gap-1">
+                <button
+                  type="button"
+                  onClick={() => setEditTarget(entry)}
+                  className="text-stone-300 transition-colors hover:text-stone-500"
+                  aria-label="수정"
+                >
+                  <Pencil className="size-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDeleteTarget(entry)
+                    setDeletePassword("")
+                    setDeleteError("")
+                  }}
+                  className="text-stone-300 transition-colors hover:text-stone-500"
+                  aria-label="삭제"
+                >
+                  <Trash2 className="size-4" />
+                </button>
+              </div>
             </div>
           ))
         )}
       </div>
+
+      {/* 작성 다이얼로그 */}
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <Button size="lg" className="w-full rounded-full" onClick={() => setCreateOpen(true)}>
+          작성하기
+        </Button>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>방명록 작성하기</DialogTitle>
+          </DialogHeader>
+          <GuestbookForm onSubmit={handleCreate} submitLabel="작성 완료" />
+        </DialogContent>
+      </Dialog>
+
+      {/* 수정 다이얼로그 */}
+      <Dialog
+        open={editTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) setEditTarget(null)
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>방명록 수정하기</DialogTitle>
+          </DialogHeader>
+          {editTarget && (
+            <GuestbookForm
+              key={editTarget.id}
+              defaultValues={{ name: editTarget.name, message: editTarget.message }}
+              onSubmit={handleEdit}
+              submitLabel="수정 완료"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* 삭제 다이얼로그 */}
+      <Dialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null)
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>글 삭제</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-stone-600">비밀번호를 입력하면 글이 삭제됩니다.</p>
+          <div className="space-y-2">
+            <Input
+              type="password"
+              inputMode="numeric"
+              maxLength={4}
+              placeholder="4자리 비밀번호"
+              value={deletePassword}
+              onChange={(e) => {
+                setDeletePassword(e.target.value)
+                setDeleteError("")
+              }}
+              className={cn("rounded-xl border-stone-200", deleteError && "border-red-300")}
+            />
+            {deleteError && <p className="text-xs text-red-400">{deleteError}</p>}
+          </div>
+          <Button
+            size="lg"
+            type="button"
+            disabled={isDeleting}
+            onClick={handleDelete}
+            className="w-full rounded-full"
+          >
+            {isDeleting ? "삭제 중..." : "삭제하기"}
+          </Button>
+        </DialogContent>
+      </Dialog>
     </section>
   )
 }
