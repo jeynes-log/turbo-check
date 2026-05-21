@@ -9,7 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
     "@workspace/ui": "workspace:*",
+    "drizzle-orm": "^0.45.2",
     "lucide-react": "^0.575.0",
     "next": "16.1.6",
     "react": "^19.2.0",
@@ -21,6 +23,7 @@
     "@types/node": "^20.19.34",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^9.39.1",
     "eslint-config-next": "16.1.6",
     "eslint-plugin-no-relative-import-paths": "^1.6.1",

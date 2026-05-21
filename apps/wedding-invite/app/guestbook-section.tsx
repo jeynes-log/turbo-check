@@ -1,16 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Input } from "@workspace/ui/components/input"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { Button } from "@workspace/ui/components/button"
-
-interface GuestbookEntry {
-  id: string
-  name: string
-  message: string
-  createdAt: string
-}
+import type { GuestbookEntry } from "@/lib/schema"
 
 export function GuestbookSection() {
   const [name, setName] = useState("")
@@ -18,19 +12,26 @@ export function GuestbookSection() {
   const [entries, setEntries] = useState<GuestbookEntry[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  useEffect(() => {
+    fetch("/api/guestbook")
+      .then((res) => res.json())
+      .then(setEntries)
+      .catch(() => {})
+  }, [])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!name.trim() || !message.trim()) return
 
     setIsSubmitting(true)
     try {
-      await new Promise((r) => setTimeout(r, 500))
-      const newEntry: GuestbookEntry = {
-        id: crypto.randomUUID(),
-        name: name.trim(),
-        message: message.trim(),
-        createdAt: new Date().toISOString(),
-      }
+      const res = await fetch("/api/guestbook", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, message }),
+      })
+      if (!res.ok) return
+      const newEntry: GuestbookEntry = await res.json()
       setEntries((prev) => [newEntry, ...prev])
       setName("")
       setMessage("")
