@@ -71,7 +71,7 @@ export function CeremonyInfoSection({
         showOutsideDays={false}
         disabled
         formatters={{ formatWeekdayName: (date) => WEEKDAY_KO[date.getDay()] }}
-        className="w-full px-20 py-8 [--cell-size:2.5rem]"
+        className="w-full p-8 [--cell-size:2.5rem]"
         classNames={{
           root: "w-ful",
           months: "flex flex-col w-full",
