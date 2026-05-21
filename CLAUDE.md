@@ -1,0 +1,61 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## 개요
+
+pnpm + Turborepo 기반 모노레포. 현재 주요 앱은 `apps/wedding-invite` (Next.js 16 청첩장 웹앱)이며, 공유 UI 패키지 `packages/ui`에 의존한다.
+
+## 개발 명령어
+
+루트에서 전체 실행:
+```bash
+pnpm dev                                        # 전체 앱 개발 서버
+pnpm build                                      # 전체 빌드
+pnpm lint                                       # 전체 린트
+pnpm check-types                                # 전체 타입 체크
+pnpm format                                     # Prettier 포맷
+```
+
+특정 앱만 실행:
+```bash
+pnpm turbo dev --filter=wedding-invite
+pnpm turbo build --filter=wedding-invite
+pnpm turbo lint --filter=wedding-invite
+```
+
+## 아키텍처
+
+### wedding-invite 앱
+
+**데이터 관리 패턴**: 모든 콘텐츠(신랑·신부 이름, 날짜, 장소, 계좌번호, 갤러리 이미지 등)는 `app/page.tsx` 최상단의 상수로 관리된다. 각 섹션 컴포넌트는 props를 통해 데이터를 받는다. 콘텐츠를 수정할 때는 항상 `page.tsx`의 상수를 먼저 확인할 것.
+
+**컴포넌트 구조**: `app/page.tsx`가 진입점이며, 각 섹션(`*-section.tsx`)을 조합해 세로 스크롤 단일 페이지를 구성한다. 인터랙션이 있는 섹션은 파일 상단에 `"use client"` 지시어가 있다.
+
+**미완성 기능**:
+- `GuestbookSection`: 백엔드 연동 없이 클라이언트 상태로만 동작 (페이지 새로고침 시 초기화됨)
+- `RsvpSection`: 마찬가지로 실제 서버 전송 없음
+- `RemindSection`: 실제 알림 서비스 미연동 (`// TODO` 주석 있음)
+
+### 공유 UI 패키지 (`@workspace/ui`)
+
+shadcn 기반 컴포넌트 라이브러리. 현재 제공 컴포넌트: `Button`, `Calendar`, `Input`, `Label`, `Textarea`. `packages/ui/src/` 디렉토리에서 직접 확인 가능하다.
+
+임포트 경로:
+```ts
+import { Button } from "@workspace/ui/components/button"
+import { cn } from "@workspace/ui/lib/utils"
+```
+
+## 환경변수
+
+`apps/wedding-invite/.env.local`에 설정:
+```
+NEXT_PUBLIC_NAVER_MAPS_CLIENT_ID=...   # 네이버 지도 API 클라이언트 ID
+```
+
+네이버 지도 미설정 시 `LocationSection`의 지도가 표시되지 않는다.
+
+## 스타일링
+
+Tailwind CSS v4 사용. 전체 색상 테마는 `stone` 계열로 통일되어 있다. 전역 스타일은 `app/globals.css`에서 `@workspace/ui`의 스타일을 임포트하고 폰트(`Noto Serif KR`)를 적용한다.
