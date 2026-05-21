@@ -1,9 +1,9 @@
 "use client"
 
-import { Button } from "@workspace/ui/components/button"
+import { buttonVariants } from "@workspace/ui/components/button"
 import { Calendar } from "@workspace/ui/components/calendar"
+import { cn } from "@workspace/ui/lib/utils"
 import { CalendarPlusIcon } from "lucide-react"
-import Link from "next/link"
 
 const WEEKDAY_KO = ["일", "월", "화", "수", "목", "금", "토"]
 
@@ -97,12 +97,15 @@ export function CeremonyInfoSection({
           />
         </div>
         <div className="mt-6 text-center">
-          <Button asChild size="lg" className="rounded-full">
-            <Link href={calendarUrl} target="_blank" rel="noopener noreferrer">
-              <CalendarPlusIcon className="size-5" />
-              달력에 추가하기
-            </Link>
-          </Button>
+          <a
+            href={calendarUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(buttonVariants({ size: "lg" }), "rounded-full")}
+          >
+            <CalendarPlusIcon className="size-5" />
+            달력에 추가하기
+          </a>
         </div>
       </div>
     </section>
