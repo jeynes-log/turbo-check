@@ -4,3 +4,7 @@
 body {
   font-family: var(--font-noto-serif), "Noto Serif KR", serif;
 }
+
+body [data-sonner-toaster] {
+  font-family: var(--font-noto-serif), "Noto Serif KR", serif;
+}
