@@ -4,15 +4,26 @@ import { useEffect, useState } from "react"
 import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { Pencil, Trash2 } from "lucide-react"
+import { Pencil, PencilLine, Trash2 } from "lucide-react"
 import confetti from "canvas-confetti"
 import { toast } from "sonner"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Textarea } from "@workspace/ui/components/textarea"
-import { Label } from "@workspace/ui/components/label"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
-import { cn } from "@workspace/ui/lib/utils"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@workspace/ui/components/dialog"
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@workspace/ui/components/field"
 import type { GuestbookEntry } from "@/lib/schema"
 
 const formSchema = z.object({
@@ -22,6 +33,12 @@ const formSchema = z.object({
 })
 
 type FormData = z.infer<typeof formSchema>
+
+const deleteFormSchema = z.object({
+  password: z.string().regex(/^\d{4}$/, "4자리 숫자를 입력해 주세요."),
+})
+
+type DeleteFormData = z.infer<typeof deleteFormSchema>
 
 function formatDate(date: string | Date) {
   return new Date(date).toLocaleDateString("ko-KR", {
@@ -54,78 +71,104 @@ function GuestbookForm({
   }
 
   return (
-    <form
-      onSubmit={form.handleSubmit(handleSubmitWrapper)}
-      autoComplete="off"
-      className="flex flex-col gap-5"
-    >
-      <div className="space-y-2">
-        <Label htmlFor="gb-name">성함</Label>
-        <Input
-          {...form.register("name")}
-          id="gb-name"
-          autoComplete="off"
-          placeholder="작성자 성함을 입력해 주세요."
-          className={cn(
-            "rounded-xl border-stone-200",
-            form.formState.errors.name && "border-red-300"
-          )}
-        />
-        {form.formState.errors.name && (
-          <p className="text-xs text-red-400">{form.formState.errors.name.message}</p>
-        )}
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="gb-message">내용</Label>
-        <div className="relative">
+    <form onSubmit={form.handleSubmit(handleSubmitWrapper)} autoComplete="off">
+      <FieldGroup>
+        <Field data-invalid={!!form.formState.errors.name}>
+          <FieldLabel htmlFor="gb-name">성함</FieldLabel>
+          <Input
+            {...form.register("name")}
+            id="gb-name"
+            autoComplete="off"
+            placeholder="작성자 성함을 입력해 주세요."
+            aria-invalid={!!form.formState.errors.name}
+          />
+          <FieldError errors={[form.formState.errors.name]} />
+        </Field>
+        <Field data-invalid={!!form.formState.errors.message}>
+          <FieldLabel htmlFor="gb-message">내용</FieldLabel>
           <Textarea
             {...form.register("message")}
             id="gb-message"
             placeholder="100자 이내로 작성해 주세요."
             rows={4}
-            className={cn(
-              "resize-none rounded-xl border-stone-200 pb-7",
-              form.formState.errors.message && "border-red-300"
-            )}
+            className="resize-none"
+            aria-invalid={!!form.formState.errors.message}
           />
-          <span className="absolute right-3 bottom-2.5 text-xs text-stone-400">
-            {messageValue.length}/100
-          </span>
-        </div>
-        {form.formState.errors.message && (
-          <p className="text-xs text-red-400">{form.formState.errors.message.message}</p>
-        )}
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="gb-password">비밀번호</Label>
-        <Input
-          {...form.register("password", { onChange: () => form.clearErrors("root") })}
-          id="gb-password"
-          type="password"
-          autoComplete="new-password"
-          inputMode="numeric"
-          maxLength={4}
-          placeholder="비밀번호를 입력해 주세요. (4자리)"
-          className={cn(
-            "rounded-xl border-stone-200",
-            form.formState.errors.password && "border-red-300"
-          )}
-        />
-        {form.formState.errors.password && (
-          <p className="text-xs text-red-400">{form.formState.errors.password.message}</p>
-        )}
-        {form.formState.errors.root && (
-          <p className="text-xs text-red-400">{form.formState.errors.root.message}</p>
-        )}
-      </div>
-      <Button
-        size="lg"
-        type="submit"
-        disabled={form.formState.isSubmitting}
-        className="w-full rounded-full"
-      >
-        {form.formState.isSubmitting ? "처리 중..." : submitLabel}
-      </Button>
+          <FieldDescription className="text-right">{messageValue.length}/100</FieldDescription>
+          <FieldError errors={[form.formState.errors.message]} />
+        </Field>
+        <Field data-invalid={!!(form.formState.errors.password || form.formState.errors.root)}>
+          <FieldLabel htmlFor="gb-password">비밀번호</FieldLabel>
+          <Input
+            {...form.register("password", { onChange: () => form.clearErrors("root") })}
+            id="gb-password"
+            type="password"
+            autoComplete="new-password"
+            inputMode="numeric"
+            maxLength={4}
+            placeholder="비밀번호를 입력해 주세요. (4자리)"
+            aria-invalid={!!(form.formState.errors.password || form.formState.errors.root)}
+          />
+          <FieldError
+            errors={[form.formState.errors.password, form.formState.errors.root].filter(Boolean)}
+          />
+        </Field>
+        <Button
+          size="lg"
+          type="submit"
+          disabled={form.formState.isSubmitting}
+          className="w-full rounded-full"
+        >
+          {form.formState.isSubmitting ? "처리 중..." : submitLabel}
+        </Button>
+      </FieldGroup>
+    </form>
+  )
+}
+
+function GuestbookDeleteForm({
+  onSubmit,
+}: {
+  onSubmit: (data: DeleteFormData) => Promise<{ error?: string } | void>
+}) {
+  const form = useForm<DeleteFormData>({
+    resolver: zodResolver(deleteFormSchema),
+    defaultValues: { password: "" },
+  })
+
+  const handleSubmitWrapper = async (data: DeleteFormData) => {
+    const result = await onSubmit(data)
+    if (result?.error) form.setError("root", { message: result.error })
+  }
+
+  return (
+    <form onSubmit={form.handleSubmit(handleSubmitWrapper)} autoComplete="off">
+      <FieldGroup>
+        <Field data-invalid={!!(form.formState.errors.password || form.formState.errors.root)}>
+          <FieldLabel htmlFor="gb-delete-password">비밀번호</FieldLabel>
+          <Input
+            {...form.register("password", { onChange: () => form.clearErrors("root") })}
+            id="gb-delete-password"
+            type="password"
+            inputMode="numeric"
+            maxLength={4}
+            autoComplete="new-password"
+            placeholder="4자리 비밀번호"
+            aria-invalid={!!(form.formState.errors.password || form.formState.errors.root)}
+          />
+          <FieldError
+            errors={[form.formState.errors.password, form.formState.errors.root].filter(Boolean)}
+          />
+        </Field>
+        <Button
+          size="lg"
+          type="submit"
+          disabled={form.formState.isSubmitting}
+          className="w-full rounded-full"
+        >
+          {form.formState.isSubmitting ? "삭제 중..." : "삭제하기"}
+        </Button>
+      </FieldGroup>
     </form>
   )
 }
@@ -135,19 +178,15 @@ export function GuestbookSection() {
   const [createOpen, setCreateOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<GuestbookEntry | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<GuestbookEntry | null>(null)
-  const [deletePassword, setDeletePassword] = useState("")
-  const [deleteError, setDeleteError] = useState("")
-  const [isDeleting, setIsDeleting] = useState(false)
-
-  async function loadEntries() {
-    try {
-      const res = await fetch("/api/guestbook")
-      const data = await res.json()
-      setEntries(data)
-    } catch {}
-  }
 
   useEffect(() => {
+    async function loadEntries() {
+      try {
+        const res = await fetch("/api/guestbook")
+        const data = await res.json()
+        setEntries(data)
+      } catch {}
+    }
     loadEntries()
   }, [])
 
@@ -194,39 +233,25 @@ export function GuestbookSection() {
     toast.success("방명록이 수정되었습니다.")
   }
 
-  const handleDelete = async () => {
+  const handleDelete = async (data: DeleteFormData): Promise<{ error?: string } | void> => {
     if (!deleteTarget) return
 
-    setIsDeleting(true)
-    setDeleteError("")
+    const res = await fetch(`/api/guestbook/${deleteTarget.id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: data.password }),
+    })
 
-    try {
-      const res = await fetch(`/api/guestbook/${deleteTarget.id}`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: deletePassword }),
-      })
+    if (res.status === 401) return { error: "비밀번호가 틀렸습니다." }
+    if (!res.ok) return { error: "삭제에 실패했습니다." }
 
-      if (res.status === 401) {
-        setDeleteError("비밀번호가 틀렸습니다.")
-        return
-      }
-      if (!res.ok) {
-        setDeleteError("삭제에 실패했습니다.")
-        return
-      }
-
-      setEntries((prev) => prev.filter((e) => e.id !== deleteTarget.id))
-      setDeleteTarget(null)
-      setDeletePassword("")
-      toast.success("방명록이 삭제되었습니다.")
-    } finally {
-      setIsDeleting(false)
-    }
+    setEntries((prev) => prev.filter((e) => e.id !== deleteTarget.id))
+    setDeleteTarget(null)
+    toast.success("방명록이 삭제되었습니다.")
   }
 
   return (
-    <section id="guestbook" className="bg-white px-6 py-12">
+    <section id="guestbook" className="flex flex-col bg-white px-6 py-12">
       <h2 className="mb-3 text-center text-lg font-bold text-stone-800">방명록</h2>
       <p className="mb-8 text-center text-sm leading-relaxed text-stone-500">
         축하의 마음을 담은 메시지를 남겨주세요.
@@ -251,27 +276,25 @@ export function GuestbookSection() {
                 <p className="mt-0.5 text-xs text-stone-400">{formatDate(entry.createdAt)}</p>
                 <p className="mt-1.5 text-sm text-stone-600">{entry.message}</p>
               </div>
-              <div className="mt-0.5 flex shrink-0 gap-1">
-                <button
-                  type="button"
+              <div className="flex shrink-0 gap-1">
+                <Button
+                  size="icon-xs"
+                  variant="ghost"
                   onClick={() => setEditTarget(entry)}
                   className="text-stone-300 transition-colors hover:text-stone-500"
                   aria-label="수정"
                 >
                   <Pencil className="size-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDeleteTarget(entry)
-                    setDeletePassword("")
-                    setDeleteError("")
-                  }}
+                </Button>
+                <Button
+                  size="icon-xs"
+                  variant="ghost"
+                  onClick={() => setDeleteTarget(entry)}
                   className="text-stone-300 transition-colors hover:text-stone-500"
                   aria-label="삭제"
                 >
                   <Trash2 className="size-4" />
-                </button>
+                </Button>
               </div>
             </div>
           ))
@@ -280,9 +303,17 @@ export function GuestbookSection() {
 
       {/* 작성 다이얼로그 */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <Button size="lg" className="w-full rounded-full" onClick={() => setCreateOpen(true)}>
-          작성하기
-        </Button>
+        <DialogTrigger
+          render={
+            <Button
+              size="lg"
+              className="w-fit self-center rounded-full"
+              onClick={() => setCreateOpen(true)}
+            >
+              <PencilLine className="size-5" /> 방명록 작성하기
+            </Button>
+          }
+        />
         <DialogContent>
           <DialogHeader>
             <DialogTitle>방명록 작성하기</DialogTitle>
@@ -325,31 +356,7 @@ export function GuestbookSection() {
             <DialogTitle>글 삭제</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-stone-600">비밀번호를 입력하면 글이 삭제됩니다.</p>
-          <div className="space-y-2">
-            <Input
-              type="password"
-              inputMode="numeric"
-              maxLength={4}
-              autoComplete="new-password"
-              placeholder="4자리 비밀번호"
-              value={deletePassword}
-              onChange={(e) => {
-                setDeletePassword(e.target.value)
-                setDeleteError("")
-              }}
-              className={cn("rounded-xl border-stone-200", deleteError && "border-red-300")}
-            />
-            {deleteError && <p className="text-xs text-red-400">{deleteError}</p>}
-          </div>
-          <Button
-            size="lg"
-            type="button"
-            disabled={isDeleting}
-            onClick={handleDelete}
-            className="w-full rounded-full"
-          >
-            {isDeleting ? "삭제 중..." : "삭제하기"}
-          </Button>
+          {deleteTarget && <GuestbookDeleteForm key={deleteTarget.id} onSubmit={handleDelete} />}
         </DialogContent>
       </Dialog>
     </section>
