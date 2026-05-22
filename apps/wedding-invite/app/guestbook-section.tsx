@@ -54,12 +54,17 @@ function GuestbookForm({
   }
 
   return (
-    <form onSubmit={form.handleSubmit(handleSubmitWrapper)} className="flex flex-col gap-5">
+    <form
+      onSubmit={form.handleSubmit(handleSubmitWrapper)}
+      autoComplete="off"
+      className="flex flex-col gap-5"
+    >
       <div className="space-y-2">
         <Label htmlFor="gb-name">성함</Label>
         <Input
           {...form.register("name")}
           id="gb-name"
+          autoComplete="off"
           placeholder="작성자 성함을 입력해 주세요."
           className={cn(
             "rounded-xl border-stone-200",
@@ -97,6 +102,7 @@ function GuestbookForm({
           {...form.register("password", { onChange: () => form.clearErrors("root") })}
           id="gb-password"
           type="password"
+          autoComplete="new-password"
           inputMode="numeric"
           maxLength={4}
           placeholder="비밀번호를 입력해 주세요. (4자리)"
@@ -324,6 +330,7 @@ export function GuestbookSection() {
               type="password"
               inputMode="numeric"
               maxLength={4}
+              autoComplete="new-password"
               placeholder="4자리 비밀번호"
               value={deletePassword}
               onChange={(e) => {
