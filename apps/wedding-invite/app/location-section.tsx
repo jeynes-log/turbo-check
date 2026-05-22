@@ -20,6 +20,8 @@ export function LocationSection() {
   const [showReset, setShowReset] = useState(false)
   const [activeTab, setActiveTab] = useState("subway")
 
+  const ZOOM_LEVEL = 16
+
   const tabs = [
     {
       id: "subway",
@@ -93,7 +95,7 @@ export function LocationSection() {
       const { x, y } = response.v2.addresses[0]
       const position = new naver.maps.LatLng(parseFloat(y), parseFloat(x))
 
-      const map = new naver.maps.Map(mapRef.current!, { center: position, zoom: 16 })
+      const map = new naver.maps.Map(mapRef.current!, { center: position, zoom: ZOOM_LEVEL })
       new naver.maps.Marker({ position, map })
 
       mapInstanceRef.current = map
@@ -111,7 +113,7 @@ export function LocationSection() {
 
   function handleReset() {
     mapInstanceRef.current?.setCenter(venuePositionRef.current!)
-    mapInstanceRef.current?.setZoom(17)
+    mapInstanceRef.current?.setZoom(ZOOM_LEVEL)
   }
 
   return (
