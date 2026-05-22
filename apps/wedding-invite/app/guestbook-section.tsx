@@ -292,7 +292,7 @@ export function GuestbookSection() {
         소중한 한마디, 오래도록 기억하겠습니다.
       </p>
 
-      <div className="flex flex-col gap-y-4">
+      <div className="mb-8 flex flex-col gap-y-4">
         <div className="space-y-2">
           {items.length === 0 ? (
             <div className="py-8 text-center text-sm leading-relaxed text-stone-400">
@@ -340,7 +340,6 @@ export function GuestbookSection() {
             currentPage={data.page}
             totalPages={data.totalPages}
             onPageChange={handlePageChange}
-            className="mb-8"
           />
         )}
       </div>
