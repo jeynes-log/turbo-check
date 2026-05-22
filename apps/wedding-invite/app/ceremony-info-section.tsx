@@ -1,6 +1,7 @@
 "use client"
 
 import { Countdown } from "@/app/countdown"
+import { weddingInfo } from "@/app/_data/wedding-info"
 import { buttonVariants } from "@workspace/ui/components/button"
 import { Calendar } from "@workspace/ui/components/calendar"
 import { cn } from "@workspace/ui/lib/utils"
@@ -8,14 +9,13 @@ import { CalendarPlusIcon } from "lucide-react"
 
 const WEEKDAY_KO = ["일", "월", "화", "수", "목", "금", "토"]
 
-interface CeremonyInfoSectionProps {
-  weddingDate: Date
-  weddingTime: string
-  venueName: string
-  venueAddress: string
-  calendarEventTitle?: string
-  calendarEventLocation?: string
-}
+const ceremony = {
+  date: new Date(2026, 10, 1, 12, 0, 0, 0), // 2026-11-01 12:00 (month 0-indexed)
+  calendar: {
+    title: "김철수 💍 우영희 결혼식",
+    location: `${weddingInfo.venue.name} ${weddingInfo.venue.address}`,
+  },
+} as const
 
 function buildGoogleCalendarUrl(
   date: Date,
@@ -48,26 +48,25 @@ function formatWeddingDate(date: Date): string {
   })
 }
 
-export function CeremonyInfoSection({
-  weddingDate,
-  weddingTime,
-  calendarEventTitle = "결혼식",
-  calendarEventLocation = "",
-}: CeremonyInfoSectionProps) {
-  const calendarUrl = buildGoogleCalendarUrl(weddingDate, calendarEventTitle, calendarEventLocation)
+export function CeremonyInfoSection() {
+  const calendarUrl = buildGoogleCalendarUrl(
+    ceremony.date,
+    ceremony.calendar.title,
+    ceremony.calendar.location
+  )
 
   return (
     <section id="ceremony-info" className="flex flex-col bg-white px-6 py-12">
       <h2 className="mb-8 text-center text-lg font-bold text-stone-800">예식 안내</h2>
       <div className="space-y-1 text-center">
-        <p className="text-base text-stone-700">{formatWeddingDate(weddingDate)}</p>
-        <p className="text-base font-medium text-stone-700">{weddingTime}</p>
+        <p className="text-base text-stone-700">{formatWeddingDate(ceremony.date)}</p>
+        <p className="text-base font-medium text-stone-700">{weddingInfo.time}</p>
       </div>
 
       <Calendar
         mode="single"
-        selected={weddingDate}
-        defaultMonth={weddingDate}
+        selected={ceremony.date}
+        defaultMonth={ceremony.date}
         showOutsideDays={false}
         disabled
         formatters={{ formatWeekdayName: (date) => WEEKDAY_KO[date.getDay()] }}

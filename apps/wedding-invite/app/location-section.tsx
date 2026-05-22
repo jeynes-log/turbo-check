@@ -1,26 +1,19 @@
 "use client"
 
+import { weddingInfo } from "@/app/_data/wedding-info"
 import { Button } from "@workspace/ui/components/button"
 import { Bus, Car, Plane, SquareParking, Train, TrainFront } from "lucide-react"
 import Image from "next/image"
 import Script from "next/script"
 import { useRef, useState } from "react"
 
-interface LocationSectionProps {
-  venueName: string
-  venueAddress: string
-  mapSearchQuery: string
-  naverMapsUrl: string
-  kakaoMapsUrl: string
-}
+const mapLinks = {
+  searchQuery: weddingInfo.venue.address,
+  naver: `https://map.naver.com/v5/search/${encodeURIComponent(`${weddingInfo.venue.name} ${weddingInfo.venue.address}`)}`,
+  kakao: `https://map.kakao.com/?q=${encodeURIComponent(weddingInfo.venue.address)}`,
+} as const
 
-export function LocationSection({
-  venueName,
-  venueAddress,
-  mapSearchQuery,
-  naverMapsUrl,
-  kakaoMapsUrl,
-}: LocationSectionProps) {
+export function LocationSection() {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<naver.maps.Map | null>(null)
   const venuePositionRef = useRef<naver.maps.LatLng | null>(null)
@@ -94,13 +87,13 @@ export function LocationSection({
   function initMap() {
     if (!mapRef.current) return
 
-    naver.maps.Service.geocode({ query: mapSearchQuery }, (status, response) => {
+    naver.maps.Service.geocode({ query: mapLinks.searchQuery }, (status, response) => {
       if (status !== naver.maps.Service.Status.OK || !response.v2.addresses.length) return
 
       const { x, y } = response.v2.addresses[0]
       const position = new naver.maps.LatLng(parseFloat(y), parseFloat(x))
 
-      const map = new naver.maps.Map(mapRef.current!, { center: position, zoom: 17 })
+      const map = new naver.maps.Map(mapRef.current!, { center: position, zoom: 16 })
       new naver.maps.Marker({ position, map })
 
       mapInstanceRef.current = map
@@ -131,8 +124,8 @@ export function LocationSection({
 
       <h2 className="mb-6 text-center text-lg font-bold text-stone-800">오시는 길</h2>
       <div className="space-y-1 text-center">
-        <p className="text-base font-medium text-stone-800">{venueName}</p>
-        <p className="text-sm text-stone-700">{venueAddress}</p>
+        <p className="text-base font-medium text-stone-800">{weddingInfo.venue.name}</p>
+        <p className="text-sm text-stone-700">{weddingInfo.venue.address}</p>
       </div>
       <div className="mt-6 space-y-6">
         <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl border border-stone-200">
@@ -149,7 +142,7 @@ export function LocationSection({
         <div className="flex gap-3">
           <Button
             variant="outline"
-            onClick={() => window.open(naverMapsUrl, "_blank", "noopener,noreferrer")}
+            onClick={() => window.open(mapLinks.naver, "_blank", "noopener,noreferrer")}
             className="flex-1"
           >
             <Image src="/icons/naver-map-icon.svg" alt="" width={16} height={16} />
@@ -157,7 +150,7 @@ export function LocationSection({
           </Button>
           <Button
             variant="outline"
-            onClick={() => window.open(kakaoMapsUrl, "_blank", "noopener,noreferrer")}
+            onClick={() => window.open(mapLinks.kakao, "_blank", "noopener,noreferrer")}
             className="flex-1"
           >
             <Image src="/icons/kakao-map-icon.svg" alt="" width={16} height={16} />

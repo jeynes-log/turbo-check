@@ -4,16 +4,18 @@ import { useState } from "react"
 import { CheckIcon, CopyIcon } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
 
-interface BankAccountEntry {
-  name: string
-  bank: string
-  account: string
-}
-
-interface BankAccountSectionProps {
-  groomAccounts: BankAccountEntry[]
-  brideAccounts: BankAccountEntry[]
-}
+const bankAccounts = {
+  groom: [
+    { name: "[신랑] 김철수", bank: "경남은행", account: "123-456-789012" },
+    { name: "김만수", bank: "국민은행", account: "123-456-789013" },
+    { name: "이영숙", bank: "신한은행", account: "110-123-456789" },
+  ],
+  bride: [
+    { name: "[신부] 우영희", bank: "경남은행", account: "123-456-789014" },
+    { name: "우준식", bank: "국민은행", account: "123-456-789015" },
+    { name: "박수진", bank: "신한은행", account: "110-123-456790" },
+  ],
+} as const
 
 async function copyToClipboard(text: string): Promise<boolean> {
   try {
@@ -24,7 +26,7 @@ async function copyToClipboard(text: string): Promise<boolean> {
   }
 }
 
-export function BankAccountSection({ groomAccounts, brideAccounts }: BankAccountSectionProps) {
+export function BankAccountSection() {
   const [activeTab, setActiveTab] = useState<"groom" | "bride">("groom")
   const [copiedIndex, setCopiedIndex] = useState<string | null>(null)
 
@@ -36,7 +38,7 @@ export function BankAccountSection({ groomAccounts, brideAccounts }: BankAccount
     }
   }
 
-  const accounts = activeTab === "groom" ? groomAccounts : brideAccounts
+  const accounts = activeTab === "groom" ? bankAccounts.groom : bankAccounts.bride
   const prefix = activeTab === "groom" ? "groom" : "bride"
 
   return (
