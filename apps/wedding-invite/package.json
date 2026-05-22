@@ -14,6 +14,7 @@
     "@hookform/resolvers": "^5.2.2",
     "@neondatabase/serverless": "^1.1.0",
     "@workspace/ui": "workspace:*",
+    "canvas-confetti": "^1.9.4",
     "drizzle-orm": "^0.45.2",
     "lucide-react": "^0.575.0",
     "next": "16.1.6",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.1",
+    "@types/canvas-confetti": "^1.9.0",
     "@types/navermaps": "^3.9.2",
     "@types/node": "^20.19.34",
     "@types/react": "^19.2.2",

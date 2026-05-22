@@ -5,6 +5,7 @@ import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Pencil, Trash2 } from "lucide-react"
+import confetti from "canvas-confetti"
 import { toast } from "sonner"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
@@ -157,6 +158,14 @@ export function GuestbookSection() {
 
     setEntries((prev) => [newEntry, ...prev])
     setCreateOpen(false)
+
+    confetti({
+      particleCount: 177,
+      spread: 111,
+      startVelocity: 35,
+      origin: { y: 0.7 },
+    })
+
     toast.success("방명록이 등록되었습니다.")
   }
 
