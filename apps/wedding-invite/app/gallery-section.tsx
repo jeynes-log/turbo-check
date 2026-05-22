@@ -5,7 +5,6 @@ import Image from "next/image"
 import Lightbox from "yet-another-react-lightbox"
 import Zoom from "yet-another-react-lightbox/plugins/zoom"
 import "yet-another-react-lightbox/styles.css"
-import { cn } from "@workspace/ui/lib/utils"
 
 const galleryImages = [
   {
@@ -50,17 +49,15 @@ export function GallerySection() {
   const [expanded, setExpanded] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(-1)
 
+  const needsExpansion = galleryImages.length > 6
+  const visibleImages = expanded || !needsExpansion ? galleryImages : galleryImages.slice(0, 6)
+
   return (
     <section id="gallery" className="bg-stone-50 px-6 py-12">
       <h2 className="mb-6 text-center text-lg font-bold text-stone-800">웨딩 갤러리</h2>
 
-      <div
-        className={cn(
-          "relative grid grid-cols-3 gap-1 overflow-hidden",
-          !expanded && "pointer-events-none max-h-[220px]"
-        )}
-      >
-        {galleryImages.map((img, idx) => (
+      <div className="relative grid grid-cols-3 gap-1">
+        {visibleImages.map((img, idx) => (
           <button
             key={img.alt}
             type="button"
@@ -72,18 +69,32 @@ export function GallerySection() {
           </button>
         ))}
 
-        {!expanded && (
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 flex h-36 items-end justify-center bg-linear-to-t from-stone-50 via-stone-50/70 to-transparent pb-4 backdrop-blur-[2px]">
+        {needsExpansion && !expanded && (
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-stone-50 to-transparent" />
+        )}
+      </div>
+
+      {needsExpansion && (
+        <div className="mt-4 flex justify-center">
+          {!expanded ? (
             <button
               type="button"
               onClick={() => setExpanded(true)}
-              className="pointer-events-auto rounded-full border border-stone-300 bg-white px-6 py-2 text-sm text-stone-700 shadow-sm"
+              className="rounded-full border border-stone-300 bg-white px-6 py-2 text-sm text-stone-700 shadow-sm"
             >
               더보기
             </button>
-          </div>
-        )}
-      </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setExpanded(false)}
+              className="rounded-full border border-stone-300 bg-white px-6 py-2 text-sm text-stone-700 shadow-sm"
+            >
+              접기
+            </button>
+          )}
+        </div>
+      )}
 
       <Lightbox
         open={lightboxIndex >= 0}
