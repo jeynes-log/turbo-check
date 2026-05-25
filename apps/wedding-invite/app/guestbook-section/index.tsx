@@ -1,14 +1,10 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
-import { useForm, useWatch } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { useRef, useState } from "react"
 import { Pencil, PencilLine, Trash2 } from "lucide-react"
 import confetti from "canvas-confetti"
 import { toast } from "sonner"
 import { Button } from "@workspace/ui/components/button"
-import { Input } from "@workspace/ui/components/input"
-import { Textarea } from "@workspace/ui/components/textarea"
 import {
   Dialog,
   DialogContent,
@@ -16,196 +12,20 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@workspace/ui/components/dialog"
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@workspace/ui/components/field"
 import { Pagination } from "@workspace/ui/components/pagination"
-import {
-  guestbookEntrySchema,
-  guestbookDeleteSchema,
-  type GuestbookFormData,
-  type GuestbookDeleteFormData,
-} from "@/lib/guestbook-schema"
-import { graphemeLength, MESSAGE_MAX } from "@/lib/text"
+import type { GuestbookFormData, GuestbookDeleteFormData } from "@/lib/guestbook-schema"
 import type { GuestbookEntry } from "@/lib/schema"
-
-const PAGE_SIZE = 5
-
-type PageData = {
-  items: GuestbookEntry[]
-  total: number
-  page: number
-  pageSize: number
-  totalPages: number
-}
-
-function formatDate(date: string | Date) {
-  return new Date(date).toLocaleDateString("ko-KR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })
-}
-
-function GuestbookForm({
-  defaultValues,
-  onSubmit,
-  submitLabel,
-}: {
-  defaultValues?: Partial<GuestbookFormData>
-  onSubmit: (data: GuestbookFormData) => Promise<{ error?: string } | void>
-  submitLabel: string
-}) {
-  const form = useForm<GuestbookFormData>({
-    resolver: zodResolver(guestbookEntrySchema),
-    defaultValues: { name: "", message: "", password: "", ...defaultValues },
-  })
-  const messageValue = useWatch({ control: form.control, name: "message", defaultValue: "" })
-
-  const handleSubmitWrapper = async (data: GuestbookFormData) => {
-    const result = await onSubmit(data)
-    if (result?.error) {
-      form.setError("root", { message: result.error })
-    }
-  }
-
-  return (
-    <form onSubmit={form.handleSubmit(handleSubmitWrapper)} autoComplete="off">
-      <FieldGroup>
-        <Field data-invalid={!!form.formState.errors.name}>
-          <FieldLabel htmlFor="gb-name">성함</FieldLabel>
-          <Input
-            {...form.register("name")}
-            id="gb-name"
-            autoComplete="off"
-            placeholder="작성자 성함을 입력해 주세요."
-            aria-invalid={!!form.formState.errors.name}
-          />
-          <FieldError errors={[form.formState.errors.name]} />
-        </Field>
-        <Field data-invalid={!!form.formState.errors.message}>
-          <FieldLabel htmlFor="gb-message">내용</FieldLabel>
-          <Textarea
-            {...form.register("message")}
-            id="gb-message"
-            placeholder={`${MESSAGE_MAX}자 이내로 작성해 주세요.`}
-            rows={4}
-            className="resize-none"
-            aria-invalid={!!form.formState.errors.message}
-          />
-          <FieldDescription className="text-right">
-            {graphemeLength(messageValue)}/{MESSAGE_MAX}
-          </FieldDescription>
-          <FieldError errors={[form.formState.errors.message]} />
-        </Field>
-        <Field data-invalid={!!(form.formState.errors.password || form.formState.errors.root)}>
-          <FieldLabel htmlFor="gb-password">비밀번호</FieldLabel>
-          <Input
-            {...form.register("password", { onChange: () => form.clearErrors("root") })}
-            id="gb-password"
-            type="password"
-            autoComplete="new-password"
-            inputMode="numeric"
-            maxLength={4}
-            placeholder="비밀번호를 입력해 주세요. (4자리)"
-            aria-invalid={!!(form.formState.errors.password || form.formState.errors.root)}
-          />
-          <FieldError
-            errors={[form.formState.errors.password, form.formState.errors.root].filter(Boolean)}
-          />
-        </Field>
-        <Button
-          size="lg"
-          type="submit"
-          disabled={form.formState.isSubmitting}
-          className="w-full rounded-full"
-        >
-          {form.formState.isSubmitting ? "처리 중..." : submitLabel}
-        </Button>
-      </FieldGroup>
-    </form>
-  )
-}
-
-function GuestbookDeleteForm({
-  onSubmit,
-}: {
-  onSubmit: (data: GuestbookDeleteFormData) => Promise<{ error?: string } | void>
-}) {
-  const form = useForm<GuestbookDeleteFormData>({
-    resolver: zodResolver(guestbookDeleteSchema),
-    defaultValues: { password: "" },
-  })
-
-  const handleSubmitWrapper = async (data: GuestbookDeleteFormData) => {
-    const result = await onSubmit(data)
-    if (result?.error) form.setError("root", { message: result.error })
-  }
-
-  return (
-    <form onSubmit={form.handleSubmit(handleSubmitWrapper)} autoComplete="off">
-      <FieldGroup>
-        <Field data-invalid={!!(form.formState.errors.password || form.formState.errors.root)}>
-          <FieldLabel htmlFor="gb-delete-password">비밀번호</FieldLabel>
-          <Input
-            {...form.register("password", { onChange: () => form.clearErrors("root") })}
-            id="gb-delete-password"
-            type="password"
-            inputMode="numeric"
-            maxLength={4}
-            autoComplete="new-password"
-            placeholder="4자리 비밀번호"
-            aria-invalid={!!(form.formState.errors.password || form.formState.errors.root)}
-          />
-          <FieldError
-            errors={[form.formState.errors.password, form.formState.errors.root].filter(Boolean)}
-          />
-        </Field>
-        <Button
-          size="lg"
-          type="submit"
-          disabled={form.formState.isSubmitting}
-          className="w-full rounded-full"
-        >
-          {form.formState.isSubmitting ? "삭제 중..." : "삭제하기"}
-        </Button>
-      </FieldGroup>
-    </form>
-  )
-}
+import { useGuestbookEntries } from "@/app/guestbook-section/hooks/use-guestbook-entries"
+import { GuestbookForm } from "@/app/guestbook-section/form"
+import { GuestbookDeleteForm } from "@/app/guestbook-section/delete-form"
+import { formatDate } from "@/app/guestbook-section/utils"
 
 export function GuestbookSection() {
-  const [page, setPage] = useState(1)
-  const [data, setData] = useState<PageData | null>(null)
+  const { page, setPage, data, refresh } = useGuestbookEntries()
   const [createOpen, setCreateOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<GuestbookEntry | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<GuestbookEntry | null>(null)
   const sectionRef = useRef<HTMLElement>(null)
-
-  const fetchPage = useCallback(async (p: number) => {
-    try {
-      const res = await fetch(`/api/guestbook?page=${p}&limit=${PAGE_SIZE}`)
-      if (res.ok) setData(await res.json())
-    } catch {}
-  }, [])
-
-  useEffect(() => {
-    let cancelled = false
-    async function load() {
-      try {
-        const res = await fetch(`/api/guestbook?page=${page}&limit=${PAGE_SIZE}`)
-        if (!cancelled && res.ok) setData(await res.json())
-      } catch {}
-    }
-    load()
-    return () => {
-      cancelled = true
-    }
-  }, [page])
 
   const handlePageChange = (p: number) => {
     setPage(p)
@@ -226,7 +46,7 @@ export function GuestbookSection() {
     if (page !== 1) {
       setPage(1)
     } else {
-      fetchPage(1)
+      refresh(1)
     }
 
     confetti({
@@ -252,7 +72,7 @@ export function GuestbookSection() {
     if (!res.ok) return { error: "수정에 실패했습니다." }
 
     setEditTarget(null)
-    await fetchPage(page)
+    await refresh()
     toast.success("방명록이 수정되었습니다.")
   }
 
@@ -275,7 +95,7 @@ export function GuestbookSection() {
     if (data?.items.length === 1 && page > 1) {
       setPage(page - 1)
     } else {
-      await fetchPage(page)
+      await refresh()
     }
 
     toast.success("방명록이 삭제되었습니다.")
