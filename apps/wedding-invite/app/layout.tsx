@@ -16,11 +16,11 @@ export const metadata: Metadata = {
   description: "두 사람의 이야기가 열리고 있어요. 2026년 11월 1일, 오드힐하우스에서 뵙겠습니다.",
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
+interface RootLayoutProps {
   children: React.ReactNode
-}>) {
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="ko">
       <body className={cn(notoSerifKR.variable, "font-sans antialiased")}>
