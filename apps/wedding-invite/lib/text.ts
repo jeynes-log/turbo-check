@@ -5,3 +5,4 @@ export function graphemeLength(input: string): number {
 }
 
 export const MESSAGE_MAX = 100
+export const NAME_MAX = 20

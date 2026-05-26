@@ -13,7 +13,7 @@ import {
   FieldLabel,
 } from "@workspace/ui/components/field"
 import { guestbookEntrySchema, type GuestbookFormData } from "@/lib/guestbook-schema"
-import { graphemeLength, MESSAGE_MAX } from "@/lib/text"
+import { graphemeLength, MESSAGE_MAX, NAME_MAX } from "@/lib/text"
 
 interface GuestbookFormProps {
   defaultValues?: Partial<GuestbookFormData>
@@ -43,6 +43,7 @@ export function GuestbookForm({ defaultValues, onSubmit, submitLabel }: Guestboo
           <Input
             {...form.register("name")}
             id="gb-name"
+            maxLength={NAME_MAX}
             autoComplete="off"
             placeholder="작성자 성함을 입력해 주세요."
             aria-invalid={!!form.formState.errors.name}

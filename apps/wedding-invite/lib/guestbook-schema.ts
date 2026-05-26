@@ -1,8 +1,17 @@
 import { z } from "zod"
-import { graphemeLength, MESSAGE_MAX } from "@/lib/text"
+import { graphemeLength, MESSAGE_MAX, NAME_MAX } from "@/lib/text"
 
 export const guestbookEntrySchema = z.object({
-  name: z.string().min(1, "성함을 입력해 주세요."),
+  name: z
+    .string()
+    .transform((v) => v.trim().replace(/\s+/g, " "))
+    .pipe(
+      z
+        .string()
+        .min(1, "성함을 입력해 주세요.")
+        .max(NAME_MAX, `${NAME_MAX}자 이내로 입력해 주세요.`)
+        .regex(/^[가-힣a-zA-Z ]+$/, "한글 또는 영문만 입력해 주세요.")
+    ),
   message: z
     .string()
     .min(1, "내용을 입력해 주세요.")
