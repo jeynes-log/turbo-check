@@ -13,7 +13,7 @@ import {
   FieldLabel,
 } from "@workspace/ui/components/field"
 import { guestbookEntrySchema, type GuestbookFormData } from "@/lib/guestbook-schema"
-import { graphemeLength, MESSAGE_MAX, NAME_MAX } from "@/lib/text"
+import { graphemeLength, truncateByGrapheme, MESSAGE_MAX, NAME_MAX } from "@/lib/text"
 
 interface GuestbookFormProps {
   defaultValues?: Partial<GuestbookFormData>
@@ -53,7 +53,16 @@ export function GuestbookForm({ defaultValues, onSubmit, submitLabel }: Guestboo
         <Field data-invalid={!!form.formState.errors.message}>
           <FieldLabel htmlFor="gb-message">내용</FieldLabel>
           <Textarea
-            {...form.register("message")}
+            {...form.register("message", {
+              onChange: () => {
+                const raw = form.getValues("message")
+                if (graphemeLength(raw) > MESSAGE_MAX) {
+                  form.setValue("message", truncateByGrapheme(raw, MESSAGE_MAX), {
+                    shouldValidate: false,
+                  })
+                }
+              },
+            })}
             id="gb-message"
             placeholder={`${MESSAGE_MAX}자 이내로 작성해 주세요.`}
             rows={4}
