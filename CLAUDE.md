@@ -125,3 +125,7 @@ export function GuestbookForm({ onSubmit }: GuestbookFormProps) {}
 ## 스타일링
 
 Tailwind CSS v4 사용. 전체 색상 테마는 `stone` 계열로 통일되어 있다. 전역 스타일은 `app/globals.css`에서 `@workspace/ui`의 스타일을 임포트하고 폰트(`Noto Serif KR`)를 적용한다.
+
+길이 단위는 `rem`을 우선 사용한다. Tailwind 기본 스페이싱 스케일(`w-6`, `p-4` 등)은 이미 rem 기반이므로 그대로 쓰면 된다. 인라인 `style`이나 CSS에서 길이를 직접 적을 때는 `1.5rem`처럼 rem으로 적는다. 1px hairline border, 미디어 쿼리 breakpoint, 의미적으로 픽셀이 더 적합하거나 부득이한 경우에 한해 `px`를 쓴다.
+
+Tailwind 클래스는 VSCode Tailwind CSS IntelliSense의 `tailwindCSS.lint.suggestCanonicalClasses` 경고가 발생하지 않는 canonical 형태를 우선 사용한다. Tailwind v4에서 스페이싱 스케일이 확장되어 `w-[2rem]` 같은 임의 값도 `w-8`로 제안되는 경우가 많으니, IntelliSense가 제안하는 표기를 따른다. 스케일에 없는 길이만 임의 값으로 작성한다.
