@@ -26,7 +26,7 @@ export function GuestbookForm({ defaultValues, onSubmit, submitLabel }: Guestboo
     resolver: zodResolver(guestbookEntrySchema),
     defaultValues: { name: "", message: "", password: "", ...defaultValues },
   })
-  const messageValue = useWatch({ control: form.control, name: "message", defaultValue: "" })
+  const messageValue = useWatch({ control: form.control, name: "message" })
 
   const handleSubmitWrapper = async (data: GuestbookFormData) => {
     const result = await onSubmit(data)
