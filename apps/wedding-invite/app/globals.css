@@ -8,3 +8,19 @@ body {
 body [data-sonner-toaster] {
   font-family: var(--font-noto-serif), "Noto Serif KR", serif;
 }
+
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@theme {
+  --animate-blink: blink 1s step-end infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-blink {
+    animation: none;
+    opacity: 1;
+  }
+}

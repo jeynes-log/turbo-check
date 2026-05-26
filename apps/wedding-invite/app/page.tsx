@@ -13,8 +13,8 @@ import { LocationSection } from "@/app/location-section"
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-stone-100/80">
-      <main className="mx-auto flex w-full max-w-[480px] flex-col shadow-2xl">
+    <div className="min-h-screen bg-stone-100/80 min-[30rem]:py-8">
+      <main className="mx-auto flex w-full max-w-120 flex-col bg-white shadow-2xl min-[30rem]:overflow-hidden min-[30rem]:rounded-3xl">
         <HeroSection />
         <GreetingSection />
         <GallerySection />

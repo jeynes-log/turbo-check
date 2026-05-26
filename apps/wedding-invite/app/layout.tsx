@@ -5,6 +5,7 @@ import "@/app/globals.css"
 import { cn } from "@workspace/ui/lib/utils"
 import { ScrollProgress } from "@/app/scroll-progress"
 import { Providers } from "@/app/providers"
+import { SplashScreen } from "@/app/splash-screen"
 
 const notoSerifKR = Noto_Serif_KR({
   variable: "--font-noto-serif",
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="ko">
       <body className={cn(notoSerifKR.variable, "font-sans antialiased")}>
         <Providers>
+          <SplashScreen />
           <ScrollProgress />
           {children}
           <Toaster richColors position="top-center" />

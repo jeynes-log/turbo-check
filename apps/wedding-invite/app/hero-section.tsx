@@ -19,7 +19,7 @@ export function HeroSection() {
           className="object-cover"
         />
       </div>
-      <div className="rounded-b-[2rem] bg-stone-100/80 px-6 py-12">
+      <div className="bg-stone-100/80 px-6 py-12">
         <h1 className="mb-4 text-center text-2xl font-medium tracking-tight text-stone-800 sm:text-3xl">
           김철수 💍 우영희
         </h1>
