@@ -96,6 +96,19 @@ export async function POST(req: Request) {
 }
 ```
 
+`apps/**`의 React 컴포넌트 props는 named interface로 정의한다. 네이밍은 `{ComponentName}Props`. inline object type이나 `type` alias 대신 `interface`를 쓴다. `packages/ui/`(shadcn)는 예외. props가 없는 컴포넌트는 빈 interface를 만들지 않는다.
+
+```ts
+// ❌
+export function GuestbookForm({ onSubmit }: { onSubmit: () => void }) {}
+
+// ✅
+interface GuestbookFormProps {
+  onSubmit: () => void
+}
+export function GuestbookForm({ onSubmit }: GuestbookFormProps) {}
+```
+
 ## 스타일링
 
 Tailwind CSS v4 사용. 전체 색상 테마는 `stone` 계열로 통일되어 있다. 전역 스타일은 `app/globals.css`에서 `@workspace/ui`의 스타일을 임포트하고 폰트(`Noto Serif KR`)를 적용한다.
