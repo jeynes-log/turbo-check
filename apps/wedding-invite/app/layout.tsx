@@ -28,7 +28,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <Providers>
           <ScrollProgress />
           {children}
-          <Toaster richColors position="bottom-center" />
+          <Toaster richColors position="top-center" />
         </Providers>
       </body>
     </html>
