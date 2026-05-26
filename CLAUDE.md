@@ -52,9 +52,19 @@ Drizzle ORM + Neon(PostgreSQL) 사용. 스키마는 `apps/wedding-invite/lib/sch
 DATABASE_URL=...   # Neon 연결 문자열
 ```
 
+### 서버 상태 관리 (TanStack Query)
+
+`@tanstack/react-query` v5 사용. `app/providers.tsx`의 `Providers` 컴포넌트가 `QueryClientProvider`를 포함하며, `app/layout.tsx`에서 `<body>` 전체를 감싼다. 새 클라이언트 Provider가 필요하면 이 파일에 추가한다.
+
+패턴:
+
+- **조회**: `useQuery`, queryKey는 `["리소스명", ...파라미터]` 형태. e.g. `["guestbook", page]`
+- **변이**: `useMutation`, `mutationFn`에서 비정상 응답 시 `ApiError(res.status)` throw. `onSuccess`에서 `invalidateQueries`로 캐시 무효화. 컴포넌트 핸들러는 `try/catch`로 `ApiError.status`를 분기해 폼 에러 반환.
+- **훅 위치**: 조회는 `hooks/use-*-entries.ts`, 변이는 `hooks/use-*-mutations.ts`로 분리.
+
 ### 공유 UI 패키지 (`@workspace/ui`)
 
-shadcn 기반 컴포넌트 라이브러리. 현재 제공 컴포넌트: `Button`, `Calendar`, `Input`, `Label`, `Textarea`. `packages/ui/src/` 디렉토리에서 직접 확인 가능하다.
+shadcn 기반 컴포넌트 라이브러리. 현재 제공 컴포넌트: `Button`, `Calendar`, `Input`, `Label`, `Skeleton`, `Textarea`. `packages/ui/src/` 디렉토리에서 직접 확인 가능하다.
 
 임포트 경로:
 

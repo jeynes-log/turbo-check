@@ -4,6 +4,7 @@ import { Toaster } from "@workspace/ui/components/sonner"
 import "@/app/globals.css"
 import { cn } from "@workspace/ui/lib/utils"
 import { ScrollProgress } from "@/app/scroll-progress"
+import { Providers } from "@/app/providers"
 
 const notoSerifKR = Noto_Serif_KR({
   variable: "--font-noto-serif",
@@ -24,9 +25,11 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="ko">
       <body className={cn(notoSerifKR.variable, "font-sans antialiased")}>
-        <ScrollProgress />
-        {children}
-        <Toaster richColors position="bottom-center" />
+        <Providers>
+          <ScrollProgress />
+          {children}
+          <Toaster richColors position="bottom-center" />
+        </Providers>
       </body>
     </html>
   )

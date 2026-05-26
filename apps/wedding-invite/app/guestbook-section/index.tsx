@@ -5,6 +5,7 @@ import { Pencil, PencilLine, Trash2 } from "lucide-react"
 import confetti from "canvas-confetti"
 import { toast } from "sonner"
 import { Button } from "@workspace/ui/components/button"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import {
   Dialog,
   DialogContent,
@@ -16,12 +17,21 @@ import { Pagination } from "@workspace/ui/components/pagination"
 import type { GuestbookFormData, GuestbookDeleteFormData } from "@/lib/guestbook-schema"
 import type { GuestbookEntry } from "@/lib/schema"
 import { useGuestbookEntries } from "@/app/guestbook-section/hooks/use-guestbook-entries"
+import {
+  ApiError,
+  useCreateGuestbookEntry,
+  useUpdateGuestbookEntry,
+  useDeleteGuestbookEntry,
+} from "@/app/guestbook-section/hooks/use-guestbook-mutations"
 import { GuestbookForm } from "@/app/guestbook-section/form"
 import { GuestbookDeleteForm } from "@/app/guestbook-section/delete-form"
 import { formatDate } from "@/app/guestbook-section/utils"
 
 export function GuestbookSection() {
-  const { page, setPage, data, refresh } = useGuestbookEntries()
+  const { page, setPage, data, isLoading } = useGuestbookEntries()
+  const createMutation = useCreateGuestbookEntry()
+  const updateMutation = useUpdateGuestbookEntry()
+  const deleteMutation = useDeleteGuestbookEntry()
   const [createOpen, setCreateOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<GuestbookEntry | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<GuestbookEntry | null>(null)
@@ -33,21 +43,14 @@ export function GuestbookSection() {
   }
 
   const handleCreate = async (formData: GuestbookFormData): Promise<{ error?: string } | void> => {
-    const res = await fetch("/api/guestbook", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    })
-
-    if (!res.ok) return { error: "등록에 실패했습니다." }
+    try {
+      await createMutation.mutateAsync(formData)
+    } catch {
+      return { error: "등록에 실패했습니다." }
+    }
 
     setCreateOpen(false)
-
-    if (page !== 1) {
-      setPage(1)
-    } else {
-      refresh(1)
-    }
+    if (page !== 1) setPage(1)
 
     confetti({
       particleCount: 177,
@@ -62,17 +65,14 @@ export function GuestbookSection() {
   const handleEdit = async (formData: GuestbookFormData): Promise<{ error?: string } | void> => {
     if (!editTarget) return
 
-    const res = await fetch(`/api/guestbook/${editTarget.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    })
-
-    if (res.status === 401) return { error: "비밀번호가 틀렸습니다." }
-    if (!res.ok) return { error: "수정에 실패했습니다." }
+    try {
+      await updateMutation.mutateAsync({ id: editTarget.id, formData })
+    } catch (e) {
+      if (e instanceof ApiError && e.status === 401) return { error: "비밀번호가 틀렸습니다." }
+      return { error: "수정에 실패했습니다." }
+    }
 
     setEditTarget(null)
-    await refresh()
     toast.success("방명록이 수정되었습니다.")
   }
 
@@ -81,21 +81,17 @@ export function GuestbookSection() {
   ): Promise<{ error?: string } | void> => {
     if (!deleteTarget) return
 
-    const res = await fetch(`/api/guestbook/${deleteTarget.id}`, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password: formData.password }),
-    })
-
-    if (res.status === 401) return { error: "비밀번호가 틀렸습니다." }
-    if (!res.ok) return { error: "삭제에 실패했습니다." }
+    try {
+      await deleteMutation.mutateAsync({ id: deleteTarget.id, password: formData.password })
+    } catch (e) {
+      if (e instanceof ApiError && e.status === 401) return { error: "비밀번호가 틀렸습니다." }
+      return { error: "삭제에 실패했습니다." }
+    }
 
     setDeleteTarget(null)
 
     if (data?.items.length === 1 && page > 1) {
       setPage(page - 1)
-    } else {
-      await refresh()
     }
 
     toast.success("방명록이 삭제되었습니다.")
@@ -114,7 +110,15 @@ export function GuestbookSection() {
 
       <div className="mb-8 flex flex-col gap-y-4">
         <div className="space-y-2">
-          {items.length === 0 ? (
+          {isLoading && !data ? (
+            Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-4">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="mt-1 h-3 w-32" />
+                <Skeleton className="mt-2 h-4 w-full" />
+              </div>
+            ))
+          ) : items.length === 0 ? (
             <div className="py-8 text-center text-sm leading-relaxed text-stone-400">
               <p>아직 작성된 방명록이 없어요.</p>
               <p>첫 번째 방명록을 남겨보세요!</p>
