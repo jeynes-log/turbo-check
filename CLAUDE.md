@@ -79,9 +79,12 @@ import { cn } from "@workspace/ui/lib/utils"
 
 ```text
 NEXT_PUBLIC_NAVER_MAPS_CLIENT_ID=...   # 네이버 지도 API 클라이언트 ID
+NEXT_PUBLIC_KAKAO_APP_KEY=...          # 카카오 JavaScript 키 (https://developers.kakao.com 앱 등록)
 ```
 
 네이버 지도 미설정 시 `LocationSection`의 지도가 표시되지 않는다.
+
+카카오 앱 키 미설정 시 `ShareSection`의 카카오톡 전달 버튼이 동작하지 않는다 (링크 복사 버튼은 정상 동작).
 
 ## 코드 스타일
 
