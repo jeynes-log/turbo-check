@@ -10,8 +10,6 @@ import { GuestbookSection } from "@/app/guestbook-section"
 import { HeroSection } from "@/app/hero-section"
 import { InfoTabSection } from "@/app/info-tab-section"
 import { LocationSection } from "@/app/location-section"
-import { RemindSection } from "@/app/remind-section"
-import { RsvpSection } from "@/app/rsvp-section"
 
 export default function Home() {
   return (
@@ -24,10 +22,8 @@ export default function Home() {
         <LocationSection />
         <InfoTabSection />
         <BankAccountSection />
-        <RemindSection />
-        <RsvpSection />
-        <GuestbookSection />
         <FlowerSection />
+        <GuestbookSection />
         <ClosingSection />
         <ShareSection />
         <FooterSection />
