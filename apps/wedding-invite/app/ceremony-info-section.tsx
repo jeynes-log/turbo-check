@@ -6,6 +6,7 @@ import { buttonVariants } from "@workspace/ui/components/button"
 import { Calendar } from "@workspace/ui/components/calendar"
 import { cn } from "@workspace/ui/lib/utils"
 import { CalendarPlusIcon } from "lucide-react"
+import { ko } from "react-day-picker/locale"
 
 const WEEKDAY_KO = ["일", "월", "화", "수", "목", "금", "토"]
 
@@ -69,6 +70,7 @@ export function CeremonyInfoSection() {
         defaultMonth={ceremony.date}
         showOutsideDays={false}
         disabled
+        locale={ko}
         formatters={{ formatWeekdayName: (date) => WEEKDAY_KO[date.getDay()] }}
         className="w-full p-8 [--cell-size:2.5rem]"
         classNames={{
