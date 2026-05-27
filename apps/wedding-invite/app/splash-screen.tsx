@@ -3,9 +3,9 @@
 import { cn } from "@workspace/ui/lib/utils"
 import { useCallback, useEffect, useRef, useState } from "react"
 
-const SPLASH_CHARS = [...Array.from("결혼식에 초대합니다 "), "❤️"]
+const SPLASH_CHARS = [...Array.from("우리, 결혼합니다 "), "🥰"]
 const TYPING_INTERVAL_MS = 150
-const AUTO_DISMISS_MS = 114000
+const AUTO_DISMISS_MS = 4000
 const FADE_OUT_MS = 500
 
 export function SplashScreen() {
@@ -69,13 +69,12 @@ export function SplashScreen() {
         isFadingOut ? "opacity-0" : "opacity-100"
       )}
     >
-      <p className="text-center text-2xl font-medium tracking-tight text-rose-700">
-        {SPLASH_CHARS.slice(0, typedCount).join("")}
-        <span
-          aria-hidden
-          className="animate-blink ml-0.5 inline-block h-[1.2em] w-[2px] translate-y-[0.1em] bg-stone-600/40"
-        />
-      </p>
+      <div className="flex items-center">
+        <span className="text-center text-2xl leading-none font-medium tracking-tight text-rose-700">
+          {SPLASH_CHARS.slice(0, typedCount).join("")}
+        </span>
+        <span aria-hidden className="animate-blink ml-0.5 inline-flex h-8 w-0.5 bg-stone-600/40" />
+      </div>
     </div>
   )
 }
