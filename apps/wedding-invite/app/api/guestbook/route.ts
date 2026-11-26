@@ -1,5 +1,5 @@
 import { db } from "@/lib/db"
-import { guestbook } from "@/lib/schema"
+import { guestbook, publicGuestbookColumns } from "@/lib/schema"
 import { guestbookEntrySchema } from "@/lib/guestbook-schema"
 import { count, desc } from "drizzle-orm"
 
@@ -12,7 +12,7 @@ export async function GET(req: Request) {
   const [[{ value: total }], items] = await Promise.all([
     db.select({ value: count() }).from(guestbook),
     db
-      .select()
+      .select(publicGuestbookColumns)
       .from(guestbook)
       .orderBy(desc(guestbook.createdAt))
       .limit(pageSize)
@@ -33,7 +33,10 @@ export async function POST(req: Request) {
 
   const { name, message, password } = parsed.data
 
-  const [entry] = await db.insert(guestbook).values({ name, message, password }).returning()
+  const [entry] = await db
+    .insert(guestbook)
+    .values({ name, message, password })
+    .returning(publicGuestbookColumns)
 
   return Response.json(entry, { status: 201 })
 }

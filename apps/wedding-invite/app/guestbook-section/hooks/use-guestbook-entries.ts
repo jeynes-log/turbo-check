@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import type { GuestbookEntry } from "@/lib/schema"
+import type { PublicGuestbookEntry as GuestbookEntry } from "@/lib/schema"
 
 const PAGE_SIZE = 5
 

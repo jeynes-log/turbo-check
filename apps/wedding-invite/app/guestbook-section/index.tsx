@@ -15,7 +15,7 @@ import {
 } from "@workspace/ui/components/dialog"
 import { Pagination } from "@workspace/ui/components/pagination"
 import type { GuestbookFormData, GuestbookDeleteFormData } from "@/lib/guestbook-schema"
-import type { GuestbookEntry } from "@/lib/schema"
+import type { PublicGuestbookEntry as GuestbookEntry } from "@/lib/schema"
 import { useGuestbookEntries } from "@/app/guestbook-section/hooks/use-guestbook-entries"
 import {
   ApiError,

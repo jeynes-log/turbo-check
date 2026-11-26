@@ -8,5 +8,14 @@ export const guestbook = pgTable("guestbook", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })
 
+// 응답으로 내보내도 되는 컬럼 (password 제외)
+export const publicGuestbookColumns = {
+  id: guestbook.id,
+  name: guestbook.name,
+  message: guestbook.message,
+  createdAt: guestbook.createdAt,
+}
+
 export type GuestbookEntry = typeof guestbook.$inferSelect
+export type PublicGuestbookEntry = Omit<GuestbookEntry, "password">
 export type NewGuestbookEntry = typeof guestbook.$inferInsert

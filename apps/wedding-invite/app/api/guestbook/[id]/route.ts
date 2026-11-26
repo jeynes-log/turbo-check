@@ -1,5 +1,5 @@
 import { db } from "@/lib/db"
-import { guestbook } from "@/lib/schema"
+import { guestbook, publicGuestbookColumns } from "@/lib/schema"
 import { guestbookEntrySchema, guestbookDeleteSchema } from "@/lib/guestbook-schema"
 import { eq } from "drizzle-orm"
 
@@ -50,7 +50,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     .update(guestbook)
     .set({ name, message })
     .where(eq(guestbook.id, Number(id)))
-    .returning()
+    .returning(publicGuestbookColumns)
 
   return Response.json(updated)
 }

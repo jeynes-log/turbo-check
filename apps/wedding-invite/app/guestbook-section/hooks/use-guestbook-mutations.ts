@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import type { GuestbookFormData } from "@/lib/guestbook-schema"
-import type { GuestbookEntry } from "@/lib/schema"
+import type { PublicGuestbookEntry as GuestbookEntry } from "@/lib/schema"
 
 export class ApiError extends Error {
   constructor(public status: number) {
